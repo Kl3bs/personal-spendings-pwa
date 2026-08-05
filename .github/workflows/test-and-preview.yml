@@ -9,6 +9,10 @@ jobs:
   test_and_preview:
     name: Lint, Test & Preview Deploy
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout Code
@@ -21,9 +25,6 @@ jobs:
           cache: "npm"
 
       - name: Install Dependencies
-        run: npm install
-
-      - name: Verify Dependencies
         run: npm ci
 
       - name: Run Linter
@@ -56,6 +57,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
       - name: Deploy to Firebase Hosting (Preview Channel)
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PERSONAL_SPENDINGS_533FC != '' }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"

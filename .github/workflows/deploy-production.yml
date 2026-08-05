@@ -9,6 +9,9 @@ jobs:
   deploy_production:
     name: Lint, Test & Live Deploy
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
 
     steps:
       - name: Checkout Code
@@ -53,6 +56,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
       - name: Deploy to Firebase Hosting (Live Channel)
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PERSONAL_SPENDINGS_533FC != '' }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
