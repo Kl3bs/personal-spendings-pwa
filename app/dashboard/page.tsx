@@ -217,9 +217,10 @@ export default function DashboardPage() {
                           Como a Renda é calculada?
                         </div>
                         <p className="text-gray-300 leading-relaxed">
-                          Renda = Renda Base + Renda Extra.<br />
-                          • <strong>6 Meses</strong>: Renda Mensal Total.<br />
-                          • <strong>Semanas</strong>: Orçamento semanal (Renda / 4).
+                          Renda = Renda Base + Renda Extra.
+                          <br />• <strong>6 Meses</strong>: Renda Mensal Total.
+                          <br />• <strong>Semanas</strong>: Orçamento semanal
+                          (Renda / 4).
                         </p>
                       </div>
                     </div>
@@ -227,7 +228,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="flex items-center gap-1 text-[9px] font-bold text-[#0F766E]">
                       <span className="w-2 h-2 rounded-full bg-[#0F766E] inline-block"></span>
-                      Renda/Orç.
+                      Renda
                     </span>
                     <span className="flex items-center gap-1 text-[9px] font-bold text-[#1E293B]">
                       <span className="w-2 h-2 rounded-full bg-[#1E293B] inline-block"></span>

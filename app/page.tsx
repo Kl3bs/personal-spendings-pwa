@@ -7,7 +7,7 @@ export default function OnboardingPage() {
   return (
     <div className="flex flex-col min-h-screen px-6 py-12 justify-between items-center text-center bg-[#FFFCF8]">
       {/* Top spacing */}
-      <div className="w-full flex justify-end">
+      <div className="w-full flex justify-center">
         <span className="text-xs font-semibold px-3 py-1 bg-[#F9D19C]/30 text-[#2C2C2C] rounded-full">
           Método Pay Yourself First
         </span>
@@ -30,7 +30,8 @@ export default function OnboardingPage() {
             Economize seu dinheiro com Gastos Conscientes
           </h1>
           <p className="text-sm text-[#2C2C2C]/70 leading-relaxed font-sans">
-            Pague a você mesmo primeiro. Invista no seu futuro antes de pagar qualquer outra conta.
+            Pague a você mesmo primeiro. Invista no seu futuro antes de pagar
+            qualquer outra conta.
           </p>
         </div>
 

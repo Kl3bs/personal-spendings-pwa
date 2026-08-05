@@ -32,7 +32,6 @@ import {
   Trash2,
   Calendar,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 
 const CATEGORY_MAP: Record<
@@ -76,7 +75,9 @@ export default function InvestmentsPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingInvestment, setEditingInvestment] = useState<Investment | undefined>(undefined);
+  const [editingInvestment, setEditingInvestment] = useState<
+    Investment | undefined
+  >(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -105,7 +106,9 @@ export default function InvestmentsPage() {
   const allocation = calculateBudgetAllocation(baseIncome, extraIncome);
   const stats = calculateInvestmentStats(allocation.totalIncome, investments);
 
-  async function handleSaveInvestment(data: Omit<Investment, "id" | "createdAt">) {
+  async function handleSaveInvestment(
+    data: Omit<Investment, "id" | "createdAt">,
+  ) {
     if (!user) return;
     if (editingInvestment?.id) {
       await updateInvestment(editingInvestment.id, data);
@@ -145,7 +148,8 @@ export default function InvestmentsPage() {
             <span>Painel de Investimentos</span>
           </h1>
           <p className="text-xs text-gray-500 mt-1">
-            Gerencie seus aportes e acompanhe sua meta de 15% (*Pay Yourself First*).
+            Gerencie seus aportes e acompanhe sua meta de 15% (*Pay Yourself
+            First*).
           </p>
         </div>
 
@@ -252,53 +256,56 @@ export default function InvestmentsPage() {
           <div className="space-y-4">
             {/* Visual Bar */}
             <div className="w-full h-4 rounded-full overflow-hidden flex bg-gray-100">
-              {(Object.keys(CATEGORY_MAP) as InvestmentCategory[]).map((catKey) => {
-                const catData = stats.byCategory[catKey];
-                if (!catData || catData.percentage <= 0) return null;
-                const config = CATEGORY_MAP[catKey];
+              {(Object.keys(CATEGORY_MAP) as InvestmentCategory[]).map(
+                (catKey) => {
+                  const catData = stats.byCategory[catKey];
+                  if (!catData || catData.percentage <= 0) return null;
+                  const config = CATEGORY_MAP[catKey];
 
-                return (
-                  <div
-                    key={catKey}
-                    style={{
-                      width: `${catData.percentage}%`,
-                      backgroundColor: config.colorHex,
-                    }}
-                    title={`${config.label}: ${formatCurrency(catData.amount)} (${catData.percentage}%)`}
-                    className="h-full first:rounded-l-full last:rounded-r-full transition-all"
-                  />
-                );
-              })}
+                  return (
+                    <div
+                      key={catKey}
+                      style={{
+                        width: `${catData.percentage}%`,
+                        backgroundColor: config.colorHex,
+                      }}
+                      title={`${config.label}: ${formatCurrency(catData.amount)} (${catData.percentage}%)`}
+                      className="h-full first:rounded-l-full last:rounded-r-full transition-all"
+                    />
+                  );
+                },
+              )}
             </div>
 
             {/* Legend List */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-2">
-              {(Object.keys(CATEGORY_MAP) as InvestmentCategory[]).map((catKey) => {
-                const catData = stats.byCategory[catKey];
-                const config = CATEGORY_MAP[catKey];
-                const Icon = config.icon;
+              {(Object.keys(CATEGORY_MAP) as InvestmentCategory[]).map(
+                (catKey) => {
+                  const catData = stats.byCategory[catKey];
+                  const config = CATEGORY_MAP[catKey];
 
-                return (
-                  <div
-                    key={catKey}
-                    className="p-3 bg-gray-50 rounded-2xl border border-gray-100 space-y-1"
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
-                      <div
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: config.colorHex }}
-                      />
-                      <span className="truncate">{config.label}</span>
+                  return (
+                    <div
+                      key={catKey}
+                      className="p-3 bg-gray-50 rounded-2xl border border-gray-100 space-y-1"
+                    >
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: config.colorHex }}
+                        />
+                        <span className="truncate">{config.label}</span>
+                      </div>
+                      <div className="text-xs font-extrabold text-[#1E293B]">
+                        {formatCurrency(catData?.amount || 0)}
+                      </div>
+                      <div className="text-[10px] text-gray-400 font-semibold">
+                        {catData?.percentage || 0}% do total
+                      </div>
                     </div>
-                    <div className="text-xs font-extrabold text-[#1E293B]">
-                      {formatCurrency(catData?.amount || 0)}
-                    </div>
-                    <div className="text-[10px] text-gray-400 font-semibold">
-                      {catData?.percentage || 0}% do total
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </div>
           </div>
         ) : (
@@ -332,7 +339,9 @@ export default function InvestmentsPage() {
                   className="py-3.5 flex items-center justify-between gap-4 hover:bg-gray-50/60 px-2 rounded-2xl transition-colors"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className={`p-2.5 rounded-2xl border ${config.badgeClass}`}>
+                    <div
+                      className={`p-2.5 rounded-2xl border ${config.badgeClass}`}
+                    >
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="min-w-0">
@@ -389,7 +398,8 @@ export default function InvestmentsPage() {
                 Nenhum investimento cadastrado ainda
               </p>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Clique no botão abaixo para adicionar seu primeiro aporte do mês.
+                Clique no botão abaixo para adicionar seu primeiro aporte do
+                mês.
               </p>
             </div>
             <button
