@@ -143,3 +143,85 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+export interface BalanceChartItem {
+  label: string;
+  income: number;
+  expenses: number;
+  incPercent: number;
+  expPercent: number;
+}
+
+export function calculateBalanceChartData(
+  expenses: Array<{ date: string; amount: number }>,
+  totalIncome: number,
+  mode: "months" | "weeks",
+  referenceDate: Date = new Date()
+): BalanceChartItem[] {
+  const parseLocalDate = (dateStr: string) => {
+    if (dateStr.includes("T")) return new Date(dateStr);
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    }
+    return new Date(dateStr);
+  };
+
+  if (mode === "weeks") {
+    const currentYear = referenceDate.getFullYear();
+    const currentMonth = referenceDate.getMonth();
+    const weeklyIncome = Math.round((totalIncome / 4) * 100) / 100;
+
+    return [1, 2, 3, 4].map((weekNum) => {
+      const weekExpenses = expenses
+        .filter((e) => {
+          const d = parseLocalDate(e.date);
+          if (d.getFullYear() !== currentYear || d.getMonth() !== currentMonth) return false;
+          const day = d.getDate();
+          if (weekNum === 1) return day >= 1 && day <= 7;
+          if (weekNum === 2) return day >= 8 && day <= 14;
+          if (weekNum === 3) return day >= 15 && day <= 21;
+          return day >= 22;
+        })
+        .reduce((sum, e) => sum + e.amount, 0);
+
+      const maxVal = Math.max(weeklyIncome, weekExpenses, 1);
+      return {
+        label: `Sem ${weekNum}`,
+        income: weeklyIncome,
+        expenses: weekExpenses,
+        incPercent: Math.min(100, Math.round((weeklyIncome / maxVal) * 100)),
+        expPercent: Math.min(100, Math.round((weekExpenses / maxVal) * 100)),
+      };
+    });
+  } else {
+    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const result: BalanceChartItem[] = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(referenceDate.getFullYear(), referenceDate.getMonth() - i, 1);
+      const year = d.getFullYear();
+      const month = d.getMonth();
+      const label = monthNames[month];
+
+      const monthExpenses = expenses
+        .filter((e) => {
+          const expDate = parseLocalDate(e.date);
+          return expDate.getFullYear() === year && expDate.getMonth() === month;
+        })
+        .reduce((sum, e) => sum + e.amount, 0);
+
+      const maxVal = Math.max(totalIncome, monthExpenses, 1);
+
+      result.push({
+        label,
+        income: totalIncome,
+        expenses: monthExpenses,
+        incPercent: Math.min(100, Math.round((totalIncome / maxVal) * 100)),
+        expPercent: Math.min(100, Math.round((monthExpenses / maxVal) * 100)),
+      });
+    }
+
+    return result;
+  }
+}
+

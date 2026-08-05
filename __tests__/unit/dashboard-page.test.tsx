@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import DashboardPage from "@/app/dashboard/page";
 
@@ -81,5 +81,20 @@ describe("DashboardPage component - Dynamic Categories & Emerald Theme", () => {
     });
 
     expect(screen.getByText(/Meta Alcançada/i)).toBeInTheDocument();
+  });
+
+  it("toggles the chart view mode between 6 Meses and Semanas", async () => {
+    render(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Overview")).toBeInTheDocument();
+    });
+
+    const weeksButton = screen.getByRole("button", { name: /semanas/i });
+    expect(weeksButton).toBeInTheDocument();
+
+    fireEvent.click(weeksButton);
+
+    expect(screen.getByText("Sem 1")).toBeInTheDocument();
   });
 });

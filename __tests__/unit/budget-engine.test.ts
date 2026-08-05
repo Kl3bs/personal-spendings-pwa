@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateBudgetAllocation, formatCurrency } from "@/lib/budget-engine";
+import { calculateBudgetAllocation, formatCurrency, calculateBalanceChartData } from "@/lib/budget-engine";
 
 describe("budget-engine", () => {
   describe("calculateBudgetAllocation", () => {
@@ -81,6 +81,30 @@ describe("budget-engine", () => {
     it("should format negative numbers correctly", () => {
       const formatted = formatCurrency(-500);
       expect(formatted).toContain("500,00");
+    });
+  });
+
+  describe("calculateBalanceChartData", () => {
+    it("should aggregate data by last 6 months when mode is 'months'", () => {
+      const mockExpenses = [
+        { id: "e1", userId: "u1", amount: 1500, category: "essencial", description: "Aluguel", date: "2026-08-01" },
+        { id: "e2", userId: "u1", amount: 500, category: "importante", description: "Mercado", date: "2026-07-15" },
+      ];
+      const result = calculateBalanceChartData(mockExpenses as any, 5000, "months");
+      expect(result).toHaveLength(6);
+      expect(result[5].income).toBe(5000);
+      expect(result[5].expenses).toBe(1500);
+    });
+
+    it("should aggregate data by weeks of current month when mode is 'weeks'", () => {
+      const mockExpenses = [
+        { id: "e1", userId: "u1", amount: 300, category: "essencial", description: "Mercado", date: "2026-08-02" },
+        { id: "e2", userId: "u1", amount: 400, category: "importante", description: "Lazer", date: "2026-08-10" },
+      ];
+      const result = calculateBalanceChartData(mockExpenses as any, 4000, "weeks");
+      expect(result).toHaveLength(4); // Week 1 to 4
+      expect(result[0].income).toBe(1000); // 4000 / 4
+      expect(result[0].expenses).toBe(300);
     });
   });
 });
