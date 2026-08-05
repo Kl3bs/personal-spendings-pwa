@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Wallet, Contribution, calculateWalletBalances } from "@/lib/patrimony-engine";
+import { Wallet, Contribution, calculateWalletBalances, filterContributionsByWallet } from "@/lib/patrimony-engine";
 
 describe("patrimony-engine", () => {
   describe("calculateWalletBalances", () => {
@@ -27,6 +27,20 @@ describe("patrimony-engine", () => {
       const result = calculateWalletBalances(wallets, contributions);
       expect(result.find((w) => w.wallet.id === "w1")?.balance).toBe(1500);
       expect(result.find((w) => w.wallet.id === "w2")?.balance).toBe(2000);
+    });
+  });
+
+  describe("filterContributionsByWallet", () => {
+    it("should filter contributions by walletId in descending date order", () => {
+      const contributions: Contribution[] = [
+        { id: "c1", userId: "u1", walletId: "w1", amount: 1000, date: "2026-08-01" },
+        { id: "c2", userId: "u1", walletId: "w2", amount: 2000, date: "2026-08-02" },
+        { id: "c3", userId: "u1", walletId: "w1", amount: 500, date: "2026-08-05" },
+      ];
+      const filtered = filterContributionsByWallet(contributions, "w1");
+      expect(filtered).toHaveLength(2);
+      expect(filtered[0].id).toBe("c3"); // Latest date first
+      expect(filtered[1].id).toBe("c1");
     });
   });
 });

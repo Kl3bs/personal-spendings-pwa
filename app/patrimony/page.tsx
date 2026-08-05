@@ -26,6 +26,15 @@ export default function PatrimonyPage() {
   const [isAddingWallet, setIsAddingWallet] = useState(false);
   const [walletName, setWalletName] = useState("");
 
+  // Contribution state
+  const [isAddingContribution, setIsAddingContribution] = useState(false);
+  const [selectedWalletId, setSelectedWalletId] = useState("");
+  const [contributionAmount, setContributionAmount] = useState("");
+  const [contributionDate, setContributionDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [contributionNote, setContributionNote] = useState("");
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u));
     return () => unsub();
@@ -59,6 +68,22 @@ export default function PatrimonyPage() {
     await deleteWallet(id);
   }
 
+  async function handleAddContribution() {
+    const amount = parseFloat(contributionAmount);
+    if (!isNaN(amount) && amount > 0 && selectedWalletId && user) {
+      await addContribution({
+        userId: user.uid,
+        walletId: selectedWalletId,
+        amount,
+        date: contributionDate,
+        note: contributionNote.trim() || undefined,
+      });
+      setContributionAmount("");
+      setContributionNote("");
+      setIsAddingContribution(false);
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen px-4 pt-6 pb-28 bg-[#FFFCF8]">
       {/* Header */}
@@ -67,13 +92,27 @@ export default function PatrimonyPage() {
           <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">Patrimônio & Wallets</h1>
           <p className="text-xs text-[#2C2C2C]/60">Monitore o crescimento dos seus investimentos</p>
         </div>
-        <button
-          onClick={() => setIsAddingWallet(true)}
-          className="flex items-center gap-1.5 bg-[#F9D19C] text-[#2C2C2C] px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#f6c382]"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nova Wallet</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {wallets.length > 0 && (
+            <button
+              onClick={() => {
+                setSelectedWalletId(wallets[0].id);
+                setIsAddingContribution(true);
+              }}
+              className="flex items-center gap-1.5 bg-[#10B981] text-white px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#059669] transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Novo Aporte</span>
+            </button>
+          )}
+          <button
+            onClick={() => setIsAddingWallet(true)}
+            className="flex items-center gap-1.5 bg-[#F9D19C] text-[#2C2C2C] px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#f6c382]"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nova Wallet</span>
+          </button>
+        </div>
       </div>
 
       {/* Hero Summary Card */}
@@ -92,9 +131,66 @@ export default function PatrimonyPage() {
           </div>
         </div>
         <p className="text-xs opacity-85">
-          {wallets.length} wallet{wallets.length !== 1 ? "s" : ""} cadastrada{wallets.length !== 1 ? "s" : ""}
+          {wallets.length} wallet{wallets.length !== 1 ? "s" : ""} cadastrada{wallets.length !== 1 ? "s" : ""} · {contributions.length} aporte{contributions.length !== 1 ? "s" : ""} registrado{contributions.length !== 1 ? "s" : ""}
         </p>
       </div>
+
+      {/* Add Contribution Modal */}
+      {isAddingContribution && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-xs w-full space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold text-[#2C2C2C]">Registrar Aporte</h3>
+            <p className="text-xs text-[#2C2C2C]/60">
+              Selecione a wallet, informe a data e o valor depositado:
+            </p>
+            <select
+              value={selectedWalletId}
+              onChange={(e) => setSelectedWalletId(e.target.value)}
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold text-[#2C2C2C]"
+            >
+              {wallets.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="number"
+              value={contributionAmount}
+              onChange={(e) => setContributionAmount(e.target.value)}
+              placeholder="Valor em R$ (Ex: 500)"
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold text-[#2C2C2C]"
+            />
+            <input
+              type="date"
+              value={contributionDate}
+              onChange={(e) => setContributionDate(e.target.value)}
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-[#2C2C2C]"
+            />
+            <input
+              type="text"
+              value={contributionNote}
+              onChange={(e) => setContributionNote(e.target.value)}
+              placeholder="Nota / Descrição (opcional)"
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-[#2C2C2C]"
+            />
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setIsAddingContribution(false)}
+                className="flex-1 py-2.5 text-xs font-semibold text-gray-500 bg-gray-100 rounded-xl"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddContribution}
+                className="flex-1 py-2.5 text-xs font-semibold text-white bg-[#10B981] rounded-xl hover:bg-[#059669]"
+              >
+                Registrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Wallet Modal */}
       {isAddingWallet && (

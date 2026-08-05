@@ -35,3 +35,12 @@ export function calculateWalletBalances(
     };
   });
 }
+
+export function filterContributionsByWallet(
+  contributions: Contribution[],
+  walletId: string
+): Contribution[] {
+  return contributions
+    .filter((c) => c.walletId === walletId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
