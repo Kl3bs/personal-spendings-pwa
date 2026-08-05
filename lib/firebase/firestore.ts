@@ -105,6 +105,7 @@ export async function setUserProfile(profile: Partial<UserProfile> & { uid: stri
     if (profile.displayName !== undefined) cleanData.displayName = profile.displayName;
     if (profile.baseIncome !== undefined) cleanData.baseIncome = profile.baseIncome;
     if (profile.extraIncome !== undefined) cleanData.extraIncome = profile.extraIncome;
+    if (profile.customCategories !== undefined) cleanData.customCategories = profile.customCategories;
     if (profile.savingsGoalPercent !== undefined) cleanData.savingsGoalPercent = profile.savingsGoalPercent;
     if (profile.completedGoals !== undefined) cleanData.completedGoals = profile.completedGoals;
     if (profile.startOfWeek !== undefined) cleanData.startOfWeek = profile.startOfWeek;
@@ -301,19 +302,23 @@ export function subscribeContributions(
   }
   const q = query(
     collection(db, "contributions"),
-    where("userId", "==", userId),
-    orderBy("date", "desc")
+    where("userId", "==", userId)
   );
   return onSnapshot(
     q,
     (snapshot) => {
-      const list: Contribution[] = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...(docSnap.data() as Omit<Contribution, "id">),
-      }));
+      const list: Contribution[] = snapshot.docs
+        .map((docSnap) => ({
+          id: docSnap.id,
+          ...(docSnap.data() as Omit<Contribution, "id">),
+        }))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       onData(list);
     },
-    () => onData([])
+    (err) => {
+      console.error("Error in subscribeContributions:", err);
+      onData([]);
+    }
   );
 }
 

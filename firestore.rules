@@ -13,5 +13,17 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
     }
 
+    // Regras para wallets (patrimônio): Usuários autenticados podem gerenciar apenas suas próprias wallets
+    match /wallets/{walletId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+    }
+
+    // Regras para aportes (contributions): Usuários autenticados podem gerenciar apenas seus próprios aportes
+    match /contributions/{contributionId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+    }
+
   }
 }
