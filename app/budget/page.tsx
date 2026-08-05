@@ -12,11 +12,12 @@ import {
   formatCurrency,
   calculateCustomBudgetAllocation,
   removeBudgetCategory,
+  getBudgetPercentageStatus,
   DEFAULT_BUDGET_CATEGORIES,
   BudgetCategory,
 } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, FolderPlus, Trash2 } from "lucide-react";
+import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, FolderPlus, Trash2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -112,6 +113,8 @@ export default function BudgetPage() {
     if (cat.icon === "Sparkles") return <Sparkles className="w-4 h-4 text-purple-600" />;
     return <FolderPlus className="w-4 h-4 text-[#0284C7]" />;
   };
+
+  const pctStatus = getBudgetPercentageStatus(categories);
 
   return (
     <div className="flex flex-col min-h-screen px-4 pt-6 pb-28 bg-[#FFFCF8]">
@@ -258,6 +261,24 @@ export default function BudgetPage() {
             <Plus className="w-3.5 h-3.5" />
             <span>Adicionar Categoria</span>
           </button>
+        </div>
+
+        {/* Visual Percentage Feedback Banner */}
+        <div
+          className={`flex items-center gap-2 p-3 rounded-2xl text-xs font-semibold border ${
+            pctStatus.status === "complete"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : pctStatus.status === "under"
+              ? "bg-amber-50 text-amber-800 border-amber-200"
+              : "bg-red-50 text-red-800 border-red-200"
+          }`}
+        >
+          {pctStatus.status === "complete" ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+          )}
+          <span>{pctStatus.message}</span>
         </div>
 
         <div className="grid grid-cols-1 gap-3">

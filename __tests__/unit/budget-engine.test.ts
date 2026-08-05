@@ -3,6 +3,7 @@ import {
   calculateBudgetAllocation,
   calculateCustomBudgetAllocation,
   removeBudgetCategory,
+  getBudgetPercentageStatus,
   DEFAULT_BUDGET_CATEGORIES,
   formatCurrency,
 } from "@/lib/budget-engine";
@@ -99,6 +100,40 @@ describe("budget-engine", () => {
       const updated = removeBudgetCategory(categories, "cat1");
       expect(updated).toHaveLength(1);
       expect(updated[0].id).toBe("cat2");
+    });
+  });
+
+  describe("getBudgetPercentageStatus", () => {
+    it("should return complete status when total percentage is 100", () => {
+      const categories = [
+        { id: "cat1", name: "Moradia", percentage: 60 },
+        { id: "cat2", name: "Lazer", percentage: 40 },
+      ];
+      const status = getBudgetPercentageStatus(categories);
+      expect(status.totalPercentage).toBe(100);
+      expect(status.status).toBe("complete");
+    });
+
+    it("should return under status when total percentage is under 100", () => {
+      const categories = [
+        { id: "cat1", name: "Moradia", percentage: 50 },
+        { id: "cat2", name: "Lazer", percentage: 30 },
+      ];
+      const status = getBudgetPercentageStatus(categories);
+      expect(status.totalPercentage).toBe(80);
+      expect(status.status).toBe("under");
+      expect(status.message).toContain("faltam 20%");
+    });
+
+    it("should return over status when total percentage is over 100", () => {
+      const categories = [
+        { id: "cat1", name: "Moradia", percentage: 70 },
+        { id: "cat2", name: "Lazer", percentage: 40 },
+      ];
+      const status = getBudgetPercentageStatus(categories);
+      expect(status.totalPercentage).toBe(110);
+      expect(status.status).toBe("over");
+      expect(status.message).toContain("10% acima");
     });
   });
 });

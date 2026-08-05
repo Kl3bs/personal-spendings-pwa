@@ -46,6 +46,43 @@ export function removeBudgetCategory(
   return categories.filter((cat) => cat.id !== categoryId);
 }
 
+export interface PercentageStatus {
+  totalPercentage: number;
+  isComplete: boolean;
+  message: string;
+  status: "complete" | "under" | "over";
+}
+
+export function getBudgetPercentageStatus(categories: BudgetCategory[]): PercentageStatus {
+  const total = categories.reduce((sum, cat) => sum + (cat.percentage || 0), 0);
+  const roundedTotal = Math.round(total * 100) / 100;
+
+  if (roundedTotal === 100) {
+    return {
+      totalPercentage: 100,
+      isComplete: true,
+      message: "⋆ 100% do orçamento distribuído perfeitamente",
+      status: "complete",
+    };
+  } else if (roundedTotal < 100) {
+    const diff = Math.round((100 - roundedTotal) * 100) / 100;
+    return {
+      totalPercentage: roundedTotal,
+      isComplete: false,
+      message: `⋆ ${roundedTotal}% distribuídos — faltam ${diff}%`,
+      status: "under",
+    };
+  } else {
+    const diff = Math.round((roundedTotal - 100) * 100) / 100;
+    return {
+      totalPercentage: roundedTotal,
+      isComplete: false,
+      message: `⋆ ${roundedTotal}% distribuídos — ${diff}% acima de 100%`,
+      status: "over",
+    };
+  }
+}
+
 export function calculateBudgetAllocation(baseIncome: number, extraIncome: number = 0): BudgetAllocation {
   const total = Math.max(0, baseIncome + extraIncome);
   return {
