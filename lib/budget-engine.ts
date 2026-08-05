@@ -82,10 +82,13 @@ export function calculateBudgetAllocation(
 
 export function calculateInvestmentStats(
   totalIncome: number,
-  investments: Investment[]
+  investments: Investment[],
+  targetAmount?: number
 ): InvestmentStats {
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-  const targetInvested = Math.max(0, Math.round(totalIncome * 0.15 * 100) / 100);
+  const targetInvested = typeof targetAmount === "number"
+    ? Math.max(0, targetAmount)
+    : Math.max(0, Math.round(totalIncome * 0.15 * 100) / 100);
 
   let targetProgressPercent = 0;
   if (targetInvested > 0) {

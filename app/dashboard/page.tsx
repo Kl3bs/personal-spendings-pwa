@@ -64,7 +64,7 @@ export default function DashboardPage() {
   const extraIncome = profile?.extraIncome || 0;
   const allocation = calculateBudgetAllocation(baseIncome, extraIncome, profile?.budgetCategories);
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const investmentStats = calculateInvestmentStats(allocation.totalIncome, investments);
+  const investmentStats = calculateInvestmentStats(allocation.totalIncome, investments, allocation.investments);
   const currentBalance = calculateNetBalance(
     allocation.totalIncome,
     totalExpenses,
@@ -212,132 +212,167 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Cash Flow Donut Card */}
-            <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-bold text-gray-800">Distribuição (Pay Yourself First)</h3>
-                <span className="text-[10px] font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg">
-                  100%
-                </span>
-              </div>
-              <div className="flex items-center justify-around py-2">
-                <div className="relative w-28 h-28 rounded-full border-8 border-[#F9D19C] border-t-purple-600 border-r-indigo-500 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-[9px] text-gray-400 uppercase font-bold">Essenciais</div>
-                    <div className="text-xs font-bold text-gray-800">
-                      {formatCurrency(allocation.necessities)}
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-purple-600"></div>
-                    <span className="text-gray-600">15% Futuro</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#F9D19C]"></div>
-                    <span className="text-gray-600">55% Essencial</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#2C2C2C]"></div>
-                    <span className="text-gray-600">30% Outros</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Latest Transactions Table (Figma Desktop Style) */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-xs p-5 space-y-4">
+          {/* Cash Flow Donut Card */}
+          <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs space-y-4">
             <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-sm font-bold text-gray-800">Últimas Transações</h3>
-                <p className="text-[11px] text-gray-400">Registros em tempo real do seu desafio</p>
-              </div>
+              <h3 className="text-sm font-bold text-gray-800">Distribuição do Orçamento</h3>
               <Link
-                href="/challenge"
-                className="text-xs font-semibold text-[#2C2C2C] hover:underline"
+                href="/budget"
+                className="text-[10px] font-semibold text-[#0F766E] bg-[#0F766E]/10 hover:bg-[#0F766E]/20 px-2.5 py-1 rounded-lg transition-colors"
               >
-                Ver Todas
+                Personalizar
               </Link>
             </div>
+            <div className="flex flex-col sm:flex-row items-center justify-around gap-4 py-2">
+              {/* Dynamic SVG Donut Chart */}
+              <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  {(() => {
+                    let cumulativePercentage = 0;
+                    const circumference = 2 * Math.PI * 38; // ~238.76
+                    return allocation.categories.map((cat) => {
+                      const strokeDasharray = `${(cat.percentage / 100) * circumference} ${circumference}`;
+                      const strokeDashoffset = -((cumulativePercentage / 100) * circumference);
+                      cumulativePercentage += cat.percentage;
+                      return (
+                        <circle
+                          key={cat.id}
+                          cx="50"
+                          cy="50"
+                          r="38"
+                          fill="transparent"
+                          stroke={cat.color || "#0F766E"}
+                          strokeWidth="12"
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={strokeDashoffset}
+                          className="transition-all duration-300"
+                        />
+                      );
+                    });
+                  })()}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">Total</span>
+                  <span className="text-xs font-extrabold font-heading text-[#1E293B]">
+                    {formatCurrency(allocation.totalIncome)}
+                  </span>
+                </div>
+              </div>
 
-            {expenses.length === 0 ? (
-              <div className="p-8 text-center text-xs text-gray-400">
-                Nenhuma transação cadastrada ainda. Clique em &quot;+ Novo Gasto&quot; para registrar.
+              {/* Dynamic Categories Legend */}
+              <div className="space-y-1.5 text-xs w-full sm:w-auto">
+                {allocation.categories.map((cat) => (
+                  <div key={cat.id} className="flex items-center justify-between gap-3 text-gray-600">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm select-none">{cat.icon || "💰"}</span>
+                      <span className="font-semibold text-gray-800 text-[11px]">{cat.name}</span>
+                    </div>
+                    <div className="text-right flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-gray-400">{cat.percentage}%</span>
+                      <span className="text-xs font-bold text-gray-700">{formatCurrency(cat.amount)}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-gray-100 text-gray-400 font-semibold">
-                      <th className="pb-3">Data</th>
-                      <th className="pb-3">Descrição</th>
-                      <th className="pb-3">Categoria</th>
-                      <th className="pb-3 text-right">Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {expenses.slice(0, 6).map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50/50">
-                        <td className="py-3 text-gray-500 font-medium">{item.date}</td>
-                        <td className="py-3 font-semibold text-gray-800">{item.description}</td>
-                        <td className="py-3">
-                          <span
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                              item.category === "essencial"
-                                ? "bg-amber-50 text-amber-700"
-                                : item.category === "importante"
-                                ? "bg-blue-50 text-blue-700"
-                                : "bg-rose-50 text-rose-700"
-                            }`}
-                          >
-                            {item.category.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="py-3 text-right font-bold text-rose-600">
-                          -{formatCurrency(item.amount)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Right Column Panel (Figma Goals Checklist & Pay Yourself First) */}
-        <div className="space-y-6">
-          {/* Pay Yourself First Card */}
-          <div className="bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] text-white rounded-3xl p-6 shadow-md space-y-4 relative overflow-hidden">
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold px-2.5 py-0.5 bg-white/20 rounded-full inline-block">
-                🎯 Investimento Prioritário
-              </span>
-              <h2 className="text-lg font-bold font-heading pt-1">
-                Para {userName} do Futuro
-              </h2>
-              <p className="text-xs opacity-80">
-                15% retidos automaticamente antes de qualquer gasto
-              </p>
+        {/* Latest Transactions Table (Figma Desktop Style) */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-xs p-5 space-y-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-sm font-bold text-gray-800">Últimas Transações</h3>
+              <p className="text-[11px] text-gray-400">Registros em tempo real do seu desafio</p>
             </div>
-
-            <div className="pt-3 border-t border-white/20 flex justify-between items-end">
-              <div>
-                <div className="text-[10px] opacity-70">Meta de Investimento</div>
-                <div className="text-2xl font-extrabold font-heading">
-                  {formatCurrency(allocation.investments)}
-                </div>
-              </div>
-              <Link
-                href="/budget"
-                className="py-2 px-3 bg-white text-[#7C3AED] font-bold text-xs rounded-xl hover:bg-gray-100 transition-all"
-              >
-                Gerenciar
-              </Link>
-            </div>
+            <Link
+              href="/challenge"
+              className="text-xs font-semibold text-[#2C2C2C] hover:underline"
+            >
+              Ver Todas
+            </Link>
           </div>
+
+          {expenses.length === 0 ? (
+            <div className="p-8 text-center text-xs text-gray-400">
+              Nenhuma transação cadastrada ainda. Clique em &quot;+ Novo Gasto&quot; para registrar.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-gray-100 text-gray-400 font-semibold">
+                    <th className="pb-3">Data</th>
+                    <th className="pb-3">Descrição</th>
+                    <th className="pb-3">Categoria</th>
+                    <th className="pb-3 text-right">Valor</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {expenses.slice(0, 6).map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50/50">
+                      <td className="py-3 text-gray-500 font-medium">{item.date}</td>
+                      <td className="py-3 font-semibold text-gray-800">{item.description}</td>
+                      <td className="py-3">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            item.category === "essencial"
+                              ? "bg-amber-50 text-amber-700"
+                              : item.category === "importante"
+                              ? "bg-blue-50 text-blue-700"
+                              : "bg-rose-50 text-rose-700"
+                          }`}
+                        >
+                          {item.category.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-3 text-right font-bold text-rose-600">
+                        -{formatCurrency(item.amount)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right Column Panel (Figma Goals Checklist & Pay Yourself First) */}
+      <div className="space-y-6">
+        {/* Pay Yourself First Card */}
+        <div className="bg-gradient-to-br from-[#0F766E] via-[#0D9488] to-[#047857] text-white rounded-3xl p-6 shadow-md space-y-4 relative overflow-hidden">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold px-2.5 py-0.5 bg-white/20 rounded-full inline-block">
+              {investmentStats.isTargetReached && investmentStats.targetInvested > 0
+                ? "🎉 Meta Alcançada!"
+                : "🎯 Investimento Prioritário"}
+            </span>
+            <h2 className="text-lg font-bold font-heading pt-1">
+              Para {userName} do Futuro
+            </h2>
+            <p className="text-xs opacity-80">
+              {investmentStats.isTargetReached && investmentStats.targetInvested > 0
+                ? "🎉 Parabéns! Sua meta de investimento deste mês foi alcançada!"
+                : "15% retidos automaticamente antes de qualquer gasto"}
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-white/20 flex justify-between items-end">
+            <div>
+              <div className="text-[10px] opacity-70">Meta de Investimento</div>
+              <div className="text-2xl font-extrabold font-heading">
+                {formatCurrency(allocation.investments)}
+              </div>
+            </div>
+            <Link
+              href="/budget"
+              className="py-2 px-3 bg-white text-[#0F766E] font-bold text-xs rounded-xl hover:bg-gray-100 transition-all shadow-xs"
+            >
+              Gerenciar
+            </Link>
+          </div>
+        </div>
 
           {/* Goals Checklist Card (Figma desktop_1.png) */}
           <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-xs space-y-4">
