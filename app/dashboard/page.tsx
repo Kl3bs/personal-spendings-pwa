@@ -62,7 +62,7 @@ export default function DashboardPage() {
   // Derived computations
   const baseIncome = profile?.baseIncome || 3500;
   const extraIncome = profile?.extraIncome || 0;
-  const allocation = calculateBudgetAllocation(baseIncome, extraIncome);
+  const allocation = calculateBudgetAllocation(baseIncome, extraIncome, profile?.budgetCategories);
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const investmentStats = calculateInvestmentStats(allocation.totalIncome, investments);
   const currentBalance = calculateNetBalance(

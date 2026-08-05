@@ -41,6 +41,15 @@ export interface Expense {
   createdAt?: Timestamp;
 }
 
+export interface BudgetCategoryConfig {
+  id: string;
+  name: string;
+  percentage: number;
+  icon?: string;
+  color?: string;
+  isInvestmentGoal?: boolean;
+}
+
 export interface UserProfile {
   uid: string;
   email: string;
@@ -49,6 +58,7 @@ export interface UserProfile {
   extraIncome?: number;
   savingsGoalPercent?: number; // e.g. 15 for 15% Pay Yourself First
   completedGoals?: string[]; // IDs of completed checklist goals in Dashboard
+  budgetCategories?: BudgetCategoryConfig[];
   startOfWeek?: string; // e.g. "Sunday" | "Monday"
   notificationsEnabled?: boolean;
   authEnabled?: boolean;

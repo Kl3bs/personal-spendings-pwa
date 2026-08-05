@@ -1,4 +1,14 @@
-import { Investment, InvestmentCategory } from "./firebase/firestore";
+import { Investment, InvestmentCategory, BudgetCategoryConfig } from "./firebase/firestore";
+
+export interface CalculatedCategory {
+  id: string;
+  name: string;
+  percentage: number;
+  amount: number;
+  icon?: string;
+  color?: string;
+  isInvestmentGoal?: boolean;
+}
 
 export interface BudgetAllocation {
   totalIncome: number;
@@ -7,6 +17,7 @@ export interface BudgetAllocation {
   emergencyFund: number; // 10%
   leisure: number; // 10%
   education: number; // 10%
+  categories: CalculatedCategory[];
 }
 
 export interface CategoryBreakdown {
@@ -22,15 +33,50 @@ export interface InvestmentStats {
   byCategory: Record<InvestmentCategory, CategoryBreakdown>;
 }
 
-export function calculateBudgetAllocation(baseIncome: number, extraIncome: number = 0): BudgetAllocation {
+export const DEFAULT_BUDGET_CATEGORIES: BudgetCategoryConfig[] = [
+  { id: "necessities", name: "Necessidades Básicas", percentage: 55, icon: "🏠", color: "#0284C7" },
+  { id: "investments", name: "Investimentos", percentage: 15, icon: "🎯", color: "#7C3AED", isInvestmentGoal: true },
+  { id: "emergency", name: "Reserva de Emergência", percentage: 10, icon: "🛡️", color: "#F59E0B" },
+  { id: "leisure", name: "Lazer & Estilo de Vida", percentage: 10, icon: "🎉", color: "#EC4899" },
+  { id: "education", name: "Educação & Conhecimento", percentage: 10, icon: "🎓", color: "#8B5CF6" },
+];
+
+export function calculateBudgetAllocation(
+  baseIncome: number,
+  extraIncome: number = 0,
+  customCategories?: BudgetCategoryConfig[]
+): BudgetAllocation {
   const total = Math.max(0, baseIncome + extraIncome);
+  const configs = customCategories && customCategories.length > 0
+    ? customCategories
+    : DEFAULT_BUDGET_CATEGORIES;
+
+  const categories: CalculatedCategory[] = configs.map((cat) => ({
+    id: cat.id,
+    name: cat.name,
+    percentage: cat.percentage,
+    amount: Math.round(total * (cat.percentage / 100) * 100) / 100,
+    icon: cat.icon || "💰",
+    color: cat.color || "#6B7280",
+    isInvestmentGoal: !!cat.isInvestmentGoal,
+  }));
+
+  const findAmt = (id: string, defPct: number) => {
+    const found = categories.find((c) => c.id === id);
+    if (found) return found.amount;
+    const invGoal = categories.find((c) => c.isInvestmentGoal);
+    if (id === "investments" && invGoal) return invGoal.amount;
+    return Math.round(total * defPct * 100) / 100;
+  };
+
   return {
     totalIncome: total,
-    necessities: Math.round(total * 0.55 * 100) / 100,
-    investments: Math.round(total * 0.15 * 100) / 100,
-    emergencyFund: Math.round(total * 0.10 * 100) / 100,
-    leisure: Math.round(total * 0.10 * 100) / 100,
-    education: Math.round(total * 0.10 * 100) / 100,
+    necessities: findAmt("necessities", 0.55),
+    investments: findAmt("investments", 0.15),
+    emergencyFund: findAmt("emergency", 0.10),
+    leisure: findAmt("leisure", 0.10),
+    education: findAmt("education", 0.10),
+    categories,
   };
 }
 

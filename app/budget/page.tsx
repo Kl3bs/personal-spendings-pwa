@@ -10,11 +10,13 @@ import {
   addInvestment,
   subscribeInvestments,
   Investment,
+  BudgetCategoryConfig,
 } from "@/lib/firebase/firestore";
 import { formatCurrency, calculateBudgetAllocation, calculateInvestmentStats } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
 import { InvestmentForm } from "@/components/investments/InvestmentForm";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, CheckCircle2 } from "lucide-react";
+import { BudgetCategoryModal } from "@/components/budget/BudgetCategoryModal";
+import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, CheckCircle2, SlidersHorizontal } from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -23,6 +25,7 @@ export default function BudgetPage() {
   const [isAddingExtra, setIsAddingExtra] = useState(false);
   const [extraValue, setExtraValue] = useState("");
   const [isPayFirstOpen, setIsPayFirstOpen] = useState(false);
+  const [isCustomizingModalOpen, setIsCustomizingModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (u) => {
@@ -43,7 +46,7 @@ export default function BudgetPage() {
 
   const baseIncome = profile?.baseIncome || 3500;
   const extraIncome = profile?.extraIncome || 0;
-  const allocation = calculateBudgetAllocation(baseIncome, extraIncome);
+  const allocation = calculateBudgetAllocation(baseIncome, extraIncome, profile?.budgetCategories);
   const stats = calculateInvestmentStats(allocation.totalIncome, investments);
   const isMetaReached = stats.isTargetReached && stats.targetInvested > 0;
 
@@ -72,6 +75,12 @@ export default function BudgetPage() {
     await addInvestment(data);
   }
 
+  async function handleSaveCategories(categories: BudgetCategoryConfig[]) {
+    if (user) {
+      await setUserProfile({ uid: user.uid, budgetCategories: categories });
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen px-4 pt-6 pb-28 bg-[#FFFCF8]">
       {/* Header */}
@@ -92,11 +101,19 @@ export default function BudgetPage() {
             </button>
           )}
           <button
+            onClick={() => setIsCustomizingModalOpen(true)}
+            className="flex items-center gap-1 bg-gray-100 text-[#2C2C2C] px-2.5 py-1.5 rounded-2xl text-xs font-semibold hover:bg-gray-200 transition-colors"
+            title="Personalizar Categorias e Porcentagens"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>Personalizar</span>
+          </button>
+          <button
             onClick={() => setIsAddingExtra(true)}
             className="flex items-center gap-1.5 bg-[#F9D19C] text-[#2C2C2C] px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#f6c382]"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Renda Extra</span>
+            <span>+ Extra</span>
           </button>
         </div>
       </div>
@@ -163,6 +180,15 @@ export default function BudgetPage() {
         />
       )}
 
+      {/* Budget Customization Modal */}
+      {isCustomizingModalOpen && user && (
+        <BudgetCategoryModal
+          initialCategories={profile?.budgetCategories}
+          onSave={handleSaveCategories}
+          onClose={() => setIsCustomizingModalOpen(false)}
+        />
+      )}
+
       {/* Extra Income Modal */}
       {isAddingExtra && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
@@ -198,80 +224,40 @@ export default function BudgetPage() {
 
       {/* Budget Allocation Cards Grid */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold text-[#2C2C2C]">Distribuição do Orçamento</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-sm font-bold text-[#2C2C2C]">Distribuição do Orçamento</h2>
+          <button
+            onClick={() => setIsCustomizingModalOpen(true)}
+            className="text-xs font-semibold text-[#0F766E] hover:underline flex items-center gap-1"
+          >
+            <SlidersHorizontal className="w-3 h-3" />
+            <span>Editar %</span>
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 gap-3">
-          {/* Necessidades Básicas */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#59C7DF]/15 text-[#0284C7] flex items-center justify-center">
-                  🏠
+          {allocation.categories.map((cat) => (
+            <div key={cat.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-sm"
+                    style={{ backgroundColor: `${cat.color || "#0F766E"}1A`, color: cat.color || "#0F766E" }}
+                  >
+                    {cat.icon || "💰"}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-[#2C2C2C]">
+                      {cat.name} ({cat.percentage}%)
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-[#2C2C2C]">Necessidades Básicas (55%)</div>
-                  <div className="text-[10px] text-[#2C2C2C]/50">Moradia, Alimentação e Contas</div>
+                <div className="text-sm font-bold text-[#2C2C2C]">
+                  {formatCurrency(cat.amount)}
                 </div>
-              </div>
-              <div className="text-sm font-bold text-[#2C2C2C]">
-                {formatCurrency(allocation.necessities)}
               </div>
             </div>
-          </div>
-
-          {/* Reserva de Emergência */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#10B981]/15 text-[#059669] flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-[#2C2C2C]">Reserva de Emergência (10%)</div>
-                  <div className="text-[10px] text-[#2C2C2C]/50">Meta: 6 meses de custo de vida</div>
-                </div>
-              </div>
-              <div className="text-sm font-bold text-[#2C2C2C]">
-                {formatCurrency(allocation.emergencyFund)}
-              </div>
-            </div>
-          </div>
-
-          {/* Lazer */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#FDB557]/20 text-[#D97706] flex items-center justify-center">
-                  <HeartHandshake className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-[#2C2C2C]">Lazer & Supérfluos (10%)</div>
-                  <div className="text-[10px] text-[#2C2C2C]/50">Passeios, hobbies e relaxamento</div>
-                </div>
-              </div>
-              <div className="text-sm font-bold text-[#2C2C2C]">
-                {formatCurrency(allocation.leisure)}
-              </div>
-            </div>
-          </div>
-
-          {/* Educação */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
-                  <GraduationCap className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-[#2C2C2C]">Educação (10%)</div>
-                  <div className="text-[10px] text-[#2C2C2C]/50">Livros, cursos e evolução pessoal</div>
-                </div>
-              </div>
-              <div className="text-sm font-bold text-[#2C2C2C]">
-                {formatCurrency(allocation.education)}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 

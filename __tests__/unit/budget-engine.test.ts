@@ -42,6 +42,28 @@ describe("budget-engine", () => {
       expect(result.necessities).toBe(722.4); // 1313.46 * 0.55 = 722.403 -> 722.4
       expect(result.investments).toBe(197.02); // 1313.46 * 0.15 = 197.019 -> 197.02
     });
+
+    it("should calculate allocations based on custom categories if provided", () => {
+      const customCategories = [
+        { id: "cat-1", name: "Moradia", percentage: 50 },
+        { id: "cat-2", name: "Investimentos", percentage: 20, isInvestmentGoal: true },
+        { id: "cat-3", name: "Viagens", percentage: 15 },
+        { id: "cat-4", name: "Lazer", percentage: 15 },
+      ];
+      const result = calculateBudgetAllocation(10000, 0, customCategories);
+      expect(result.totalIncome).toBe(10000);
+      expect(result.categories).toHaveLength(4);
+      expect(result.categories[0]).toEqual({
+        id: "cat-1",
+        name: "Moradia",
+        percentage: 50,
+        amount: 5000,
+        icon: "💰",
+        color: "#6B7280",
+        isInvestmentGoal: false,
+      });
+      expect(result.investments).toBe(2000); // 20% of 10000
+    });
   });
 
   describe("formatCurrency", () => {
