@@ -97,4 +97,14 @@ describe("DashboardPage component - Dynamic Categories & Emerald Theme", () => {
 
     expect(screen.getByText("Sem 1")).toBeInTheDocument();
   });
+
+  it("renders information tooltip explaining income calculation", async () => {
+    render(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Overview")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/Como a Renda é calculada\?/i)).toBeInTheDocument();
+  });
 });

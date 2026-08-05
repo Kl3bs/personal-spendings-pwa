@@ -26,6 +26,7 @@ import {
   CheckCircle2,
   Circle,
   PiggyBank,
+  Info,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -34,7 +35,9 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
-  const [chartViewMode, setChartViewMode] = useState<"months" | "weeks">("months");
+  const [chartViewMode, setChartViewMode] = useState<"months" | "weeks">(
+    "months",
+  );
   const [hoveredBarIndex, setHoveredBarIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -84,7 +87,7 @@ export default function DashboardPage() {
   const chartData = calculateBalanceChartData(
     expenses,
     allocation.totalIncome,
-    chartViewMode
+    chartViewMode,
   );
 
   const userName =
@@ -203,9 +206,24 @@ export default function DashboardPage() {
             <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs space-y-4 relative">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-sm font-bold text-gray-800">
-                    Balanço Financ.
-                  </h3>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-bold text-gray-800">
+                      Balanço Financeiro
+                    </h3>
+                    <div className="relative group cursor-pointer">
+                      <Info className="w-3.5 h-3.5 text-gray-400 hover:text-[#0F766E] transition-colors" />
+                      <div className="absolute left-0 top-5 hidden group-hover:block z-30 w-56 p-3 bg-[#1E293B] text-white text-[10px] rounded-xl shadow-xl border border-gray-700 pointer-events-none animate-in fade-in zoom-in-95">
+                        <div className="font-bold text-[#F9D19C] mb-1">
+                          Como a Renda é calculada?
+                        </div>
+                        <p className="text-gray-300 leading-relaxed">
+                          Renda = Renda Base + Renda Extra.<br />
+                          • <strong>6 Meses</strong>: Renda Mensal Total.<br />
+                          • <strong>Semanas</strong>: Orçamento semanal (Renda / 4).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="flex items-center gap-1 text-[9px] font-bold text-[#0F766E]">
                       <span className="w-2 h-2 rounded-full bg-[#0F766E] inline-block"></span>
@@ -255,10 +273,16 @@ export default function DashboardPage() {
                     {/* Hover Floating Tooltip */}
                     {hoveredBarIndex === idx && (
                       <div className="absolute -top-12 z-20 bg-[#1E293B] text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-lg whitespace-nowrap animate-in fade-in zoom-in-95 pointer-events-none">
-                        <div className="font-bold text-[#F9D19C] mb-0.5">{item.label}</div>
+                        <div className="font-bold text-[#F9D19C] mb-0.5">
+                          {item.label}
+                        </div>
                         <div className="flex gap-2">
-                          <span className="text-emerald-300">R: {formatCurrency(item.income)}</span>
-                          <span className="text-rose-300">G: {formatCurrency(item.expenses)}</span>
+                          <span className="text-emerald-300">
+                            R: {formatCurrency(item.income)}
+                          </span>
+                          <span className="text-rose-300">
+                            G: {formatCurrency(item.expenses)}
+                          </span>
                         </div>
                       </div>
                     )}
@@ -273,7 +297,9 @@ export default function DashboardPage() {
                       {/* Expense Bar */}
                       <div
                         className={`w-2.5 rounded-t-md transition-all group-hover:brightness-110 shadow-2xs ${
-                          item.expenses > item.income ? "bg-rose-500" : "bg-[#1E293B]"
+                          item.expenses > item.income
+                            ? "bg-rose-500"
+                            : "bg-[#1E293B]"
                         }`}
                         style={{ height: `${item.expPercent}%` }}
                       ></div>
