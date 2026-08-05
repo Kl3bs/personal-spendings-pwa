@@ -15,12 +15,48 @@ export interface BudgetCategory {
   icon?: string;
 }
 
+export interface BudgetMethodology {
+  id: string;
+  name: string;
+  description: string;
+  categories: BudgetCategory[];
+}
+
 export const DEFAULT_BUDGET_CATEGORIES: BudgetCategory[] = [
   { id: "necessities", name: "Necessidades Básicas", percentage: 55, description: "Moradia, Alimentação e Contas", icon: "🏠" },
   { id: "investments", name: "Para o Seu Futuro (Investimentos)", percentage: 15, description: "Boleto Obrigatório Nº 1", icon: "Sparkles" },
   { id: "emergencyFund", name: "Reserva de Emergência", percentage: 10, description: "Meta: 6 meses de custo de vida", icon: "ShieldCheck" },
   { id: "leisure", name: "Lazer & Supérfluos", percentage: 10, description: "Passeios, hobbies e relaxamento", icon: "HeartHandshake" },
   { id: "education", name: "Educação", percentage: 10, description: "Livros, cursos e evolução pessoal", icon: "GraduationCap" },
+];
+
+export const BUDGET_METHODOLOGIES: BudgetMethodology[] = [
+  {
+    id: "payYourselfFirst",
+    name: "Pay Yourself First (55/15/10/10/10)",
+    description: "Priorize seu futuro antes de pagar qualquer outra conta.",
+    categories: DEFAULT_BUDGET_CATEGORIES,
+  },
+  {
+    id: "rule503020",
+    name: "Regra 50/30/20",
+    description: "Divisão clássica: 50% necessidades, 30% desejos/lazer, 20% investimentos.",
+    categories: [
+      { id: "necessities", name: "Necessidades Básicas", percentage: 50, description: "Aluguel, contas, alimentação básica", icon: "🏠" },
+      { id: "leisure", name: "Desejos & Lazer", percentage: 30, description: "Restaurantes, hobbies, streaming", icon: "HeartHandshake" },
+      { id: "investments", name: "Investimentos & Poupança", percentage: 20, description: "Reserva e liberdade financeira", icon: "Sparkles" },
+    ],
+  },
+  {
+    id: "rule602020",
+    name: "Regra 60/20/20",
+    description: "Ideal para quem precisa de maior margem no custo de vida essencial.",
+    categories: [
+      { id: "necessities", name: "Necessidades Essenciais", percentage: 60, description: "Moradia, transporte, saúde", icon: "🏠" },
+      { id: "investments", name: "Investimentos & Reserva", percentage: 20, description: "Metas de longo prazo", icon: "Sparkles" },
+      { id: "leisure", name: "Lazer & Estilo de Vida", percentage: 20, description: "Passeios e compras", icon: "HeartHandshake" },
+    ],
+  },
 ];
 
 export interface CategoryAllocation {

@@ -13,11 +13,12 @@ import {
   calculateCustomBudgetAllocation,
   removeBudgetCategory,
   getBudgetPercentageStatus,
+  BUDGET_METHODOLOGIES,
   DEFAULT_BUDGET_CATEGORIES,
   BudgetCategory,
 } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, FolderPlus, Trash2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, FolderPlus, Trash2, AlertCircle, CheckCircle2, Wand2 } from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -29,6 +30,7 @@ export default function BudgetPage() {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [categoryPercentage, setCategoryPercentage] = useState("");
+  const [isSelectingMethodology, setIsSelectingMethodology] = useState(false);
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (u) => {
@@ -102,6 +104,13 @@ export default function BudgetPage() {
     if (user) {
       const updated = removeBudgetCategory(categories, categoryId);
       await setUserProfile({ uid: user.uid, customCategories: updated });
+    }
+  }
+
+  async function handleApplyMethodology(methodologyCategories: BudgetCategory[]) {
+    if (user) {
+      await setUserProfile({ uid: user.uid, customCategories: methodologyCategories });
+      setIsSelectingMethodology(false);
     }
   }
 
@@ -252,16 +261,64 @@ export default function BudgetPage() {
 
       {/* Budget Allocation Cards Grid */}
       <div className="space-y-3">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-wrap gap-2">
           <h2 className="text-sm font-bold text-[#2C2C2C]">Distribuição do Orçamento</h2>
-          <button
-            onClick={() => setIsAddingCategory(true)}
-            className="flex items-center gap-1 text-xs font-semibold text-[#7C3AED] hover:underline"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Adicionar Categoria</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSelectingMethodology(true)}
+              className="flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200 hover:bg-amber-100 transition-colors"
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              <span>Sugerir Distribuição</span>
+            </button>
+            <button
+              onClick={() => setIsAddingCategory(true)}
+              className="flex items-center gap-1 text-xs font-semibold text-[#7C3AED] hover:underline"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Adicionar Categoria</span>
+            </button>
+          </div>
         </div>
+
+        {/* Methodology Selection Modal */}
+        {isSelectingMethodology && (
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-[#2C2C2C] flex items-center gap-1.5">
+                  <Wand2 className="w-4 h-4 text-amber-500" />
+                  <span>Escolha uma Metodologia</span>
+                </h3>
+              </div>
+              <p className="text-xs text-[#2C2C2C]/60">
+                Selecione uma regra pronta para preencher automaticamente os percentuais. Você poderá personalizar depois:
+              </p>
+              <div className="space-y-2.5 max-h-72 overflow-y-auto pt-1">
+                {BUDGET_METHODOLOGIES.map((meth) => (
+                  <button
+                    key={meth.id}
+                    onClick={() => handleApplyMethodology(meth.categories)}
+                    className="w-full text-left p-3.5 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-amber-50 hover:border-amber-200 transition-all space-y-1 group"
+                  >
+                    <div className="text-xs font-bold text-[#2C2C2C] group-hover:text-amber-800">
+                      {meth.name}
+                    </div>
+                    <div className="text-[11px] text-gray-500">{meth.description}</div>
+                  </button>
+                ))}
+              </div>
+              <div className="pt-2">
+                <button
+                  onClick={() => setIsSelectingMethodology(false)}
+                  className="w-full py-2.5 text-xs font-semibold text-gray-500 bg-gray-100 rounded-xl hover:bg-gray-200"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Visual Percentage Feedback Banner */}
         <div

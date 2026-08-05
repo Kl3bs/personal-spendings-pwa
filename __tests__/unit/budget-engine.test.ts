@@ -4,6 +4,7 @@ import {
   calculateCustomBudgetAllocation,
   removeBudgetCategory,
   getBudgetPercentageStatus,
+  BUDGET_METHODOLOGIES,
   DEFAULT_BUDGET_CATEGORIES,
   formatCurrency,
 } from "@/lib/budget-engine";
@@ -134,6 +135,16 @@ describe("budget-engine", () => {
       expect(status.totalPercentage).toBe(110);
       expect(status.status).toBe("over");
       expect(status.message).toContain("10% acima");
+    });
+  });
+
+  describe("BUDGET_METHODOLOGIES", () => {
+    it("should provide predefined methodologies like 50/30/20 and Pay Yourself First", () => {
+      expect(BUDGET_METHODOLOGIES.length).toBeGreaterThanOrEqual(2);
+      const rule503020 = BUDGET_METHODOLOGIES.find((m) => m.id === "rule503020");
+      expect(rule503020).toBeDefined();
+      const totalPct = rule503020?.categories.reduce((s, c) => s + c.percentage, 0);
+      expect(totalPct).toBe(100);
     });
   });
 });
