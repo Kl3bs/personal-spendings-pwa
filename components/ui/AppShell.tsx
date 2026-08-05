@@ -17,11 +17,7 @@ import {
   HelpCircle,
   Mail,
   Bell,
-  CheckCircle2,
-  Circle,
   Power,
-  List,
-  FileText,
 } from "lucide-react";
 import Link from "next/link";
 

@@ -14,7 +14,7 @@ describe("webpush", () => {
 
   describe("requestNotificationPermission", () => {
     it("should return false if Notification API is not in window", async () => {
-      // @ts-ignore
+      // @ts-expect-error - Testing fallback when Notification API is missing
       delete global.Notification;
       const result = await requestNotificationPermission();
       expect(result).toBe(false);

@@ -53,7 +53,7 @@ export async function ensureUserProfile(
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
-      const defaultProfile: Record<string, any> = {
+      const defaultProfile: Record<string, unknown> = {
         uid: user.uid,
         email: user.email || "",
         displayName: user.displayName || "",
@@ -69,11 +69,11 @@ export async function ensureUserProfile(
         updatedAt: Timestamp.now(),
       };
       await setDoc(ref, defaultProfile);
-      return defaultProfile as UserProfile;
+      return defaultProfile as unknown as UserProfile;
     } else {
       // Merge only non-destructive updates (like updated display name or email if changed)
       const existing = snap.data() as UserProfile;
-      const updates: Record<string, any> = { updatedAt: Timestamp.now() };
+      const updates: Record<string, unknown> = { updatedAt: Timestamp.now() };
       if (user.email && user.email !== existing.email) updates.email = user.email;
       if (user.displayName && user.displayName !== existing.displayName) updates.displayName = user.displayName;
 
@@ -94,7 +94,7 @@ export async function ensureUserProfile(
 export async function setUserProfile(profile: Partial<UserProfile> & { uid: string }) {
   try {
     const ref = doc(db, "users", profile.uid);
-    const cleanData: Record<string, any> = {
+    const cleanData: Record<string, unknown> = {
       updatedAt: Timestamp.now(),
     };
 
