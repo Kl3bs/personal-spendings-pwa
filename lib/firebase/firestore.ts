@@ -246,10 +246,13 @@ export function subscribeExpenses(
 import { Wallet, Contribution } from "@/lib/patrimony-engine";
 
 export async function addWallet(wallet: Omit<Wallet, "id">) {
-  return await addDoc(collection(db, "wallets"), {
-    ...wallet,
+  const data: Record<string, unknown> = {
+    userId: wallet.userId,
+    name: wallet.name,
     createdAt: Timestamp.now(),
-  });
+  };
+  if (wallet.color !== undefined) data.color = wallet.color;
+  return await addDoc(collection(db, "wallets"), data);
 }
 
 export function subscribeWallets(
@@ -295,10 +298,17 @@ export async function deleteWallet(walletId: string) {
 // ----------------------------------------------------
 
 export async function addContribution(contribution: Omit<Contribution, "id">) {
-  return await addDoc(collection(db, "contributions"), {
-    ...contribution,
+  const data: Record<string, unknown> = {
+    userId: contribution.userId,
+    walletId: contribution.walletId,
+    amount: contribution.amount,
+    date: contribution.date,
     createdAt: Timestamp.now(),
-  });
+  };
+  if (contribution.note) {
+    data.note = contribution.note;
+  }
+  return await addDoc(collection(db, "contributions"), data);
 }
 
 export function subscribeContributions(

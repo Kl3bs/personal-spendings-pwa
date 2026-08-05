@@ -76,12 +76,13 @@ export default function PatrimonyPage() {
   async function handleAddContribution() {
     const amount = parseFloat(contributionAmount);
     if (!isNaN(amount) && amount > 0 && selectedWalletId && user) {
+      const note = contributionNote.trim();
       await addContribution({
         userId: user.uid,
         walletId: selectedWalletId,
         amount,
         date: contributionDate,
-        note: contributionNote.trim() || undefined,
+        ...(note ? { note } : {}),
       });
       setContributionAmount("");
       setContributionNote("");
