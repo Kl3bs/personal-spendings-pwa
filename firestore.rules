@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regras para perfil do usuário: Usuários autenticados podem ler e escrever seus próprios dados
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Regras para despesas: Usuários autenticados podem gerenciar apenas suas próprias despesas
+    match /expenses/{expenseId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+    }
+
+  }
+}
