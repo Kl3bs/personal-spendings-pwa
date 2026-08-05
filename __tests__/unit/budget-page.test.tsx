@@ -5,6 +5,8 @@ import { addInvestment } from "@/lib/firebase/firestore";
 
 let mockUser: { uid: string; email: string; displayName?: string } | null = null;
 
+let mockInvestments: Array<{ id: string; userId: string; amount: number; category: string; description: string; date: string }> = [];
+
 vi.mock("firebase/auth", () => ({
   onAuthStateChanged: vi.fn((auth, callback) => {
     callback(mockUser);
@@ -22,6 +24,10 @@ vi.mock("@/lib/firebase/firestore", () => ({
     cb({ uid, displayName: "Lucas", baseIncome: 3500, extraIncome: 0 });
     return () => {};
   }),
+  subscribeInvestments: vi.fn((uid, cb) => {
+    cb(mockInvestments);
+    return () => {};
+  }),
   setUserProfile: vi.fn(),
   addInvestment: vi.fn().mockResolvedValue("new-id"),
 }));
@@ -30,6 +36,7 @@ describe("BudgetPage component - Pagar Primeiro", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUser = { uid: "user-123", email: "lucas@example.com", displayName: "Lucas" };
+    mockInvestments = [];
   });
 
   it("opens the InvestmentForm modal with pre-filled values when clicking 'Pagar Primeiro'", async () => {
@@ -85,5 +92,33 @@ describe("BudgetPage component - Pagar Primeiro", () => {
         date: expect.any(String),
       });
     });
+  });
+
+  it("disables the button and displays a success message when investment goal is reached", async () => {
+    mockInvestments = [
+      {
+        id: "inv-1",
+        userId: "user-123",
+        amount: 600, // Goal is 525 (15% of 3500)
+        category: "renda_fixa",
+        description: "Aporte Tesouro",
+        date: "2026-08-01",
+      },
+    ];
+
+    render(<BudgetPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Orçamento & Metas")).toBeInTheDocument();
+    });
+
+    // Success message check
+    expect(
+      screen.getByText(/Parabéns! Sua meta de investimento deste mês foi alcançada!/i)
+    ).toBeInTheDocument();
+
+    // Disabled button check
+    const disabledButton = screen.getByRole("button", { name: /meta alcançada/i });
+    expect(disabledButton).toBeDisabled();
   });
 });

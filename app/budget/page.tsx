@@ -8,16 +8,18 @@ import {
   subscribeUserProfile,
   setUserProfile,
   addInvestment,
+  subscribeInvestments,
   Investment,
 } from "@/lib/firebase/firestore";
-import { formatCurrency, calculateBudgetAllocation } from "@/lib/budget-engine";
+import { formatCurrency, calculateBudgetAllocation, calculateInvestmentStats } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
 import { InvestmentForm } from "@/components/investments/InvestmentForm";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw } from "lucide-react";
+import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, CheckCircle2 } from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [investments, setInvestments] = useState<Investment[]>([]);
   const [isAddingExtra, setIsAddingExtra] = useState(false);
   const [extraValue, setExtraValue] = useState("");
   const [isPayFirstOpen, setIsPayFirstOpen] = useState(false);
@@ -32,14 +34,19 @@ export default function BudgetPage() {
   useEffect(() => {
     if (!user) return;
     const unsubProfile = subscribeUserProfile(user.uid, (p) => setProfile(p));
+    const unsubInvestments = subscribeInvestments(user.uid, (data) => setInvestments(data));
     return () => {
       unsubProfile();
+      unsubInvestments();
     };
   }, [user]);
 
   const baseIncome = profile?.baseIncome || 3500;
   const extraIncome = profile?.extraIncome || 0;
   const allocation = calculateBudgetAllocation(baseIncome, extraIncome);
+  const stats = calculateInvestmentStats(allocation.totalIncome, investments);
+  const isMetaReached = stats.isTargetReached && stats.targetInvested > 0;
+
   const userName =
     profile?.displayName ||
     user?.displayName ||
@@ -105,11 +112,17 @@ export default function BudgetPage() {
               Para {userName.toLowerCase() === "você" ? "o Seu" : `o ${userName}`} Futuro
             </h2>
             <p className="text-xs opacity-80">
-              15% do seu orçamento é seu investimento de liberdade financeira
+              {isMetaReached
+                ? "🎉 Parabéns! Sua meta de investimento deste mês foi alcançada!"
+                : "15% do seu orçamento é seu investimento de liberdade financeira"}
             </p>
           </div>
           <div className="p-3 bg-white/10 rounded-2xl">
-            <Sparkles className="w-6 h-6 text-amber-300" />
+            {isMetaReached ? (
+              <CheckCircle2 className="w-6 h-6 text-emerald-300" />
+            ) : (
+              <Sparkles className="w-6 h-6 text-amber-300" />
+            )}
           </div>
         </div>
 
@@ -121,10 +134,15 @@ export default function BudgetPage() {
             </div>
           </div>
           <button
+            disabled={isMetaReached}
             onClick={() => setIsPayFirstOpen(true)}
-            className="py-2 px-4 bg-white text-[#7C3AED] text-xs font-bold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all"
+            className={`py-2 px-4 text-xs font-bold rounded-xl shadow-xs transition-all ${
+              isMetaReached
+                ? "bg-white/20 text-white/90 border border-white/30 cursor-not-allowed"
+                : "bg-white text-[#7C3AED] hover:bg-gray-50 active:scale-95"
+            }`}
           >
-            Pagar Primeiro
+            {isMetaReached ? "Meta Alcançada! 🎉" : "Pagar Primeiro"}
           </button>
         </div>
       </div>
