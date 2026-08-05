@@ -3,7 +3,7 @@ export interface Wallet {
   userId: string;
   name: string;
   color?: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export interface Contribution {
@@ -13,7 +13,7 @@ export interface Contribution {
   amount: number;
   date: string; // YYYY-MM-DD
   note?: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export interface WalletWithBalance {

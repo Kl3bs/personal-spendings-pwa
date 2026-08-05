@@ -19,7 +19,13 @@ import {
 } from "@/lib/firebase/firestore";
 import { formatCurrency } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
-import { Plus, Wallet as WalletIcon, Trash2, PiggyBank, TrendingUp, Calendar } from "lucide-react";
+import {
+  Plus,
+  Wallet as WalletIcon,
+  Trash2,
+  PiggyBank,
+  TrendingUp,
+} from "lucide-react";
 
 export default function PatrimonyPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -33,7 +39,7 @@ export default function PatrimonyPage() {
   const [selectedWalletId, setSelectedWalletId] = useState("");
   const [contributionAmount, setContributionAmount] = useState("");
   const [contributionDate, setContributionDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [contributionNote, setContributionNote] = useState("");
 
@@ -55,7 +61,10 @@ export default function PatrimonyPage() {
   const walletBalances = calculateWalletBalances(wallets, contributions);
   const totalPatrimony = walletBalances.reduce((sum, w) => sum + w.balance, 0);
   const evolutionPoints = calculateMonthlyPatrimonyEvolution(contributions);
-  const maxAccumulated = Math.max(...evolutionPoints.map((p) => p.accumulated), 1);
+  const maxAccumulated = Math.max(
+    ...evolutionPoints.map((p) => p.accumulated),
+    1,
+  );
   const summary = calculatePatrimonySummary(contributions);
 
   async function handleCreateWallet() {
@@ -95,8 +104,12 @@ export default function PatrimonyPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">Patrimônio & Wallets</h1>
-          <p className="text-xs text-[#2C2C2C]/60">Monitore o crescimento dos seus investimentos</p>
+          <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">
+            Patrimônio & Wallets
+          </h1>
+          <p className="text-xs text-[#2C2C2C]/60">
+            Monitore o crescimento dos seus investimentos
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {wallets.length > 0 && (
@@ -129,7 +142,10 @@ export default function PatrimonyPage() {
               💰 Patrimônio Consolidado
               {summary.monthlyGrowthPercentage !== 0 && (
                 <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
-                  {summary.monthlyGrowthPercentage > 0 ? `+${summary.monthlyGrowthPercentage}%` : `${summary.monthlyGrowthPercentage}%`} este mês
+                  {summary.monthlyGrowthPercentage > 0
+                    ? `+${summary.monthlyGrowthPercentage}%`
+                    : `${summary.monthlyGrowthPercentage}%`}{" "}
+                  este mês
                 </span>
               )}
             </span>
@@ -143,7 +159,8 @@ export default function PatrimonyPage() {
         </div>
         <p className="text-xs opacity-85 flex justify-between items-center pt-1 border-t border-white/15">
           <span>
-            {wallets.length} wallet{wallets.length !== 1 ? "s" : ""} · {contributions.length} aporte{contributions.length !== 1 ? "s" : ""}
+            {wallets.length} wallet{wallets.length !== 1 ? "s" : ""} ·{" "}
+            {contributions.length} aporte{contributions.length !== 1 ? "s" : ""}
           </span>
           {summary.currentMonthDeposits > 0 && (
             <span className="font-semibold text-emerald-100">
@@ -157,7 +174,9 @@ export default function PatrimonyPage() {
       {isAddingContribution && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-xs w-full space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-[#2C2C2C]">Registrar Aporte</h3>
+            <h3 className="text-sm font-bold text-[#2C2C2C]">
+              Registrar Aporte
+            </h3>
             <p className="text-xs text-[#2C2C2C]/60">
               Selecione a wallet, informe a data e o valor depositado:
             </p>
@@ -188,7 +207,7 @@ export default function PatrimonyPage() {
             <input
               type="text"
               value={contributionNote}
-              onChange={(e) => setContributionNote(e.target.value)}
+              onChange={(e) => setContributionNote(e.target.value || "")}
               placeholder="Nota / Descrição (opcional)"
               className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-[#2C2C2C]"
             />
@@ -214,9 +233,12 @@ export default function PatrimonyPage() {
       {isAddingWallet && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-xs w-full space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-[#2C2C2C]">Nova Wallet / Carteira</h3>
+            <h3 className="text-sm font-bold text-[#2C2C2C]">
+              Nova Wallet / Carteira
+            </h3>
             <p className="text-xs text-[#2C2C2C]/60">
-              Digite um nome para a sua wallet (ex: Reserva de Emergência, CDB Nubank, Tesouro Direto):
+              Digite um nome para a sua wallet (ex: Reserva de Emergência, CDB
+              Nubank, Tesouro Direto):
             </p>
             <input
               type="text"
@@ -255,9 +277,15 @@ export default function PatrimonyPage() {
 
           <div className="h-36 flex items-end justify-between gap-2 pt-4 px-2 border-b border-gray-100 pb-2">
             {evolutionPoints.map((pt) => {
-              const heightPct = Math.max(10, Math.round((pt.accumulated / maxAccumulated) * 100));
+              const heightPct = Math.max(
+                10,
+                Math.round((pt.accumulated / maxAccumulated) * 100),
+              );
               return (
-                <div key={pt.monthKey} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                <div
+                  key={pt.monthKey}
+                  className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group"
+                >
                   <div className="text-[9px] font-bold text-emerald-700 opacity-0 group-hover:opacity-100 transition-opacity">
                     {formatCurrency(pt.accumulated)}
                   </div>
@@ -266,7 +294,9 @@ export default function PatrimonyPage() {
                     className="w-full max-w-[28px] bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-xl transition-all shadow-xs"
                     title={`${pt.label}: ${formatCurrency(pt.accumulated)} (Aporte: ${formatCurrency(pt.monthlyDeposit)})`}
                   />
-                  <span className="text-[10px] text-gray-500 font-medium">{pt.label}</span>
+                  <span className="text-[10px] text-gray-500 font-medium">
+                    {pt.label}
+                  </span>
                 </div>
               );
             })}
@@ -283,9 +313,12 @@ export default function PatrimonyPage() {
             <div className="w-12 h-12 rounded-full bg-[#10B981]/15 text-[#059669] flex items-center justify-center mx-auto">
               <WalletIcon className="w-6 h-6" />
             </div>
-            <h3 className="text-sm font-semibold text-[#2C2C2C]">Nenhuma wallet criada ainda</h3>
+            <h3 className="text-sm font-semibold text-[#2C2C2C]">
+              Nenhuma wallet criada ainda
+            </h3>
             <p className="text-xs text-[#2C2C2C]/60 max-w-xs mx-auto">
-              Crie sua primeira wallet para começar a organizar seus investimentos e poupança!
+              Crie sua primeira wallet para começar a organizar seus
+              investimentos e poupança!
             </p>
           </div>
         ) : (
@@ -300,7 +333,9 @@ export default function PatrimonyPage() {
                     <WalletIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#2C2C2C]">{wallet.name}</div>
+                    <div className="text-xs font-bold text-[#2C2C2C]">
+                      {wallet.name}
+                    </div>
                     <div className="text-[11px] text-gray-500">Saldo atual</div>
                   </div>
                 </div>
