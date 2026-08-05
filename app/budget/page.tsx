@@ -102,7 +102,7 @@ export default function BudgetPage() {
       </div>
 
       {/* Primary Highlight Card: "Para o Lucas do Futuro" (Pay Yourself First) */}
-      <div className="bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] text-white rounded-3xl p-6 shadow-md space-y-4 mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#0F766E] via-[#0D9488] to-[#047857] text-white rounded-3xl p-6 shadow-md space-y-4 mb-6 relative overflow-hidden">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <span className="text-xs font-semibold px-2.5 py-0.5 bg-white/20 rounded-full inline-block">
@@ -139,7 +139,7 @@ export default function BudgetPage() {
             className={`py-2 px-4 text-xs font-bold rounded-xl shadow-xs transition-all ${
               isMetaReached
                 ? "bg-white/20 text-white/90 border border-white/30 cursor-not-allowed"
-                : "bg-white text-[#7C3AED] hover:bg-gray-50 active:scale-95"
+                : "bg-white text-[#0F766E] hover:bg-gray-50 active:scale-95"
             }`}
           >
             {isMetaReached ? "Meta Alcançada! 🎉" : "Pagar Primeiro"}
