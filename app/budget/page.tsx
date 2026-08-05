@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import {
@@ -180,9 +181,12 @@ export default function BudgetPage() {
               {formatCurrency(investmentAmount)}
             </div>
           </div>
-          <button className="py-2 px-4 bg-white text-[#7C3AED] text-xs font-bold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all">
+          <Link
+            href="/patrimony"
+            className="py-2 px-4 bg-white text-[#7C3AED] text-xs font-bold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all inline-block"
+          >
             Pagar Primeiro
-          </button>
+          </Link>
         </div>
       </div>
 
