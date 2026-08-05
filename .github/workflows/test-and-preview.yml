@@ -21,6 +21,9 @@ jobs:
           cache: "npm"
 
       - name: Install Dependencies
+        run: npm install
+
+      - name: Verify Dependencies
         run: npm ci
 
       - name: Run Linter
