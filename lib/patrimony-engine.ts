@@ -44,3 +44,54 @@ export function filterContributionsByWallet(
     .filter((c) => c.walletId === walletId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
+
+export interface MonthlyPatrimonyPoint {
+  monthKey: string; // YYYY-MM
+  label: string; // Month name or short format
+  monthlyDeposit: number;
+  accumulated: number;
+}
+
+export function calculateMonthlyPatrimonyEvolution(
+  contributions: Contribution[]
+): MonthlyPatrimonyPoint[] {
+  if (contributions.length === 0) return [];
+
+  // Group deposits by month (YYYY-MM)
+  const depositsByMonth = new Map<string, number>();
+
+  // Sort contributions chronologically
+  const sorted = [...contributions].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  sorted.forEach((c) => {
+    const monthKey = c.date.substring(0, 7); // YYYY-MM
+    depositsByMonth.set(
+      monthKey,
+      (depositsByMonth.get(monthKey) || 0) + (c.amount || 0)
+    );
+  });
+
+  const monthKeys = Array.from(depositsByMonth.keys()).sort();
+  let cumulative = 0;
+
+  const monthNames = [
+    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+    "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+  ];
+
+  return monthKeys.map((key) => {
+    const deposit = depositsByMonth.get(key) || 0;
+    cumulative += deposit;
+    const [, monthNum] = key.split("-");
+    const label = monthNames[parseInt(monthNum, 10) - 1] || key;
+
+    return {
+      monthKey: key,
+      label,
+      monthlyDeposit: Math.round(deposit * 100) / 100,
+      accumulated: Math.round(cumulative * 100) / 100,
+    };
+  });
+}

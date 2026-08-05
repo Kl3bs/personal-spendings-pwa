@@ -7,6 +7,7 @@ import {
   Wallet,
   Contribution,
   calculateWalletBalances,
+  calculateMonthlyPatrimonyEvolution,
 } from "@/lib/patrimony-engine";
 import {
   addWallet,
@@ -52,6 +53,8 @@ export default function PatrimonyPage() {
 
   const walletBalances = calculateWalletBalances(wallets, contributions);
   const totalPatrimony = walletBalances.reduce((sum, w) => sum + w.balance, 0);
+  const evolutionPoints = calculateMonthlyPatrimonyEvolution(contributions);
+  const maxAccumulated = Math.max(...evolutionPoints.map((p) => p.accumulated), 1);
 
   async function handleCreateWallet() {
     if (walletName.trim() && user) {
@@ -221,6 +224,37 @@ export default function PatrimonyPage() {
                 Criar Wallet
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Monthly Evolution Chart Card */}
+      {evolutionPoints.length > 0 && (
+        <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs space-y-4 mb-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-bold text-[#2C2C2C] flex items-center gap-1.5">
+              <TrendingUp className="w-4 h-4 text-emerald-600" />
+              <span>Evolução Patrimonial (Mês a Mês)</span>
+            </h2>
+          </div>
+
+          <div className="h-36 flex items-end justify-between gap-2 pt-4 px-2 border-b border-gray-100 pb-2">
+            {evolutionPoints.map((pt) => {
+              const heightPct = Math.max(10, Math.round((pt.accumulated / maxAccumulated) * 100));
+              return (
+                <div key={pt.monthKey} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                  <div className="text-[9px] font-bold text-emerald-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {formatCurrency(pt.accumulated)}
+                  </div>
+                  <div
+                    style={{ height: `${heightPct}%` }}
+                    className="w-full max-w-[28px] bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-xl transition-all shadow-xs"
+                    title={`${pt.label}: ${formatCurrency(pt.accumulated)} (Aporte: ${formatCurrency(pt.monthlyDeposit)})`}
+                  />
+                  <span className="text-[10px] text-gray-500 font-medium">{pt.label}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
