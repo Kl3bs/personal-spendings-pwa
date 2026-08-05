@@ -8,6 +8,7 @@ import {
   Contribution,
   calculateWalletBalances,
   calculateMonthlyPatrimonyEvolution,
+  calculatePatrimonySummary,
 } from "@/lib/patrimony-engine";
 import {
   addWallet,
@@ -55,6 +56,7 @@ export default function PatrimonyPage() {
   const totalPatrimony = walletBalances.reduce((sum, w) => sum + w.balance, 0);
   const evolutionPoints = calculateMonthlyPatrimonyEvolution(contributions);
   const maxAccumulated = Math.max(...evolutionPoints.map((p) => p.accumulated), 1);
+  const summary = calculatePatrimonySummary(contributions);
 
   async function handleCreateWallet() {
     if (walletName.trim() && user) {
@@ -122,8 +124,13 @@ export default function PatrimonyPage() {
       <div className="bg-gradient-to-br from-[#10B981] to-[#047857] text-white rounded-3xl p-6 shadow-md space-y-3 mb-6 relative overflow-hidden">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <span className="text-xs font-semibold px-2.5 py-0.5 bg-white/20 rounded-full inline-block">
+            <span className="text-xs font-semibold px-2.5 py-0.5 bg-white/20 rounded-full inline-flex items-center gap-1">
               💰 Patrimônio Consolidado
+              {summary.monthlyGrowthPercentage !== 0 && (
+                <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                  {summary.monthlyGrowthPercentage > 0 ? `+${summary.monthlyGrowthPercentage}%` : `${summary.monthlyGrowthPercentage}%`} este mês
+                </span>
+              )}
             </span>
             <div className="text-3xl font-extrabold font-heading pt-1">
               {formatCurrency(totalPatrimony)}
@@ -133,8 +140,15 @@ export default function PatrimonyPage() {
             <PiggyBank className="w-6 h-6 text-emerald-200" />
           </div>
         </div>
-        <p className="text-xs opacity-85">
-          {wallets.length} wallet{wallets.length !== 1 ? "s" : ""} cadastrada{wallets.length !== 1 ? "s" : ""} · {contributions.length} aporte{contributions.length !== 1 ? "s" : ""} registrado{contributions.length !== 1 ? "s" : ""}
+        <p className="text-xs opacity-85 flex justify-between items-center pt-1 border-t border-white/15">
+          <span>
+            {wallets.length} wallet{wallets.length !== 1 ? "s" : ""} · {contributions.length} aporte{contributions.length !== 1 ? "s" : ""}
+          </span>
+          {summary.currentMonthDeposits > 0 && (
+            <span className="font-semibold text-emerald-100">
+              +{formatCurrency(summary.currentMonthDeposits)} no mês atual
+            </span>
+          )}
         </p>
       </div>
 

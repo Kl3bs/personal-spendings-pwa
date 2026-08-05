@@ -95,3 +95,48 @@ export function calculateMonthlyPatrimonyEvolution(
     };
   });
 }
+
+export interface PatrimonySummary {
+  totalBalance: number;
+  currentMonthDeposits: number;
+  previousMonthDeposits: number;
+  monthlyGrowthPercentage: number;
+}
+
+export function calculatePatrimonySummary(
+  contributions: Contribution[]
+): PatrimonySummary {
+  const totalBalance = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+
+  const points = calculateMonthlyPatrimonyEvolution(contributions);
+  if (points.length === 0) {
+    return {
+      totalBalance: 0,
+      currentMonthDeposits: 0,
+      previousMonthDeposits: 0,
+      monthlyGrowthPercentage: 0,
+    };
+  }
+
+  const lastPoint = points[points.length - 1];
+  const previousPoint = points.length >= 2 ? points[points.length - 2] : null;
+
+  const currentMonthDeposits = lastPoint.monthlyDeposit;
+  const previousMonthDeposits = previousPoint ? previousPoint.monthlyDeposit : 0;
+
+  let monthlyGrowthPercentage = 0;
+  if (previousMonthDeposits > 0) {
+    monthlyGrowthPercentage = Math.round(
+      ((currentMonthDeposits - previousMonthDeposits) / previousMonthDeposits) * 100
+    );
+  } else if (currentMonthDeposits > 0) {
+    monthlyGrowthPercentage = 100;
+  }
+
+  return {
+    totalBalance: Math.round(totalBalance * 100) / 100,
+    currentMonthDeposits,
+    previousMonthDeposits,
+    monthlyGrowthPercentage,
+  };
+}

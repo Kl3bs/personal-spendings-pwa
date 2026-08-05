@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Wallet, Contribution, calculateWalletBalances, filterContributionsByWallet, calculateMonthlyPatrimonyEvolution } from "@/lib/patrimony-engine";
+import { Wallet, Contribution, calculateWalletBalances, filterContributionsByWallet, calculateMonthlyPatrimonyEvolution, calculatePatrimonySummary } from "@/lib/patrimony-engine";
 
 describe("patrimony-engine", () => {
   describe("calculateWalletBalances", () => {
@@ -56,6 +56,20 @@ describe("patrimony-engine", () => {
       expect(points[0].accumulated).toBe(1000);
       expect(points[1].accumulated).toBe(1500);
       expect(points[2].accumulated).toBe(3000);
+    });
+  });
+
+  describe("calculatePatrimonySummary", () => {
+    it("should compute total balance and growth percentage", () => {
+      const contributions: Contribution[] = [
+        { id: "c1", userId: "u1", walletId: "w1", amount: 1000, date: "2026-07-01" },
+        { id: "c2", userId: "u1", walletId: "w1", amount: 500, date: "2026-08-01" },
+      ];
+      const summary = calculatePatrimonySummary(contributions);
+      expect(summary.totalBalance).toBe(1500);
+      expect(summary.currentMonthDeposits).toBe(500);
+      expect(summary.previousMonthDeposits).toBe(1000);
+      expect(summary.monthlyGrowthPercentage).toBe(-50); // 500 vs 1000 = -50%
     });
   });
 });
