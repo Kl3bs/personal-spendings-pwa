@@ -136,6 +136,15 @@ describe("budget-engine", () => {
       expect(status.status).toBe("over");
       expect(status.message).toContain("10% acima");
     });
+
+    it("should handle category without percentage gracefully", () => {
+      const categories = [
+        { id: "cat1", name: "Moradia", percentage: 50 },
+        { id: "cat2", name: "Sem percentual", percentage: (undefined as unknown as number) },
+      ];
+      const status = getBudgetPercentageStatus(categories);
+      expect(status.totalPercentage).toBe(50);
+    });
   });
 
   describe("BUDGET_METHODOLOGIES", () => {
