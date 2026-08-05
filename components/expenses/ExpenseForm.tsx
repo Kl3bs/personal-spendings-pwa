@@ -63,6 +63,7 @@ export function ExpenseForm({ userId, onSave, onClose }: ExpenseFormProps) {
           <div className="w-12 h-1.5 bg-[#2C2C2C]/20 rounded-full mx-auto -mr-6" />
           <button
             onClick={onClose}
+            aria-label="Fechar"
             className="p-2 rounded-full bg-white/40 text-[#2C2C2C] hover:bg-white/60 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -144,6 +145,7 @@ export function ExpenseForm({ userId, onSave, onClose }: ExpenseFormProps) {
           <button
             type="button"
             onClick={handleDelete}
+            aria-label="Apagar"
             className="h-14 rounded-2xl bg-[#F5D7D7] text-[#9B3030] font-semibold shadow-xs active:scale-95 transition-all flex items-center justify-center"
           >
             <Delete className="w-5 h-5" />
@@ -178,6 +180,7 @@ export function ExpenseForm({ userId, onSave, onClose }: ExpenseFormProps) {
           <button
             type="button"
             onClick={handleSubmit}
+            aria-label="Salvar despesa"
             disabled={saving || parseFloat(displayValue) <= 0}
             className="row-span-2 rounded-2xl bg-white text-[#2C2C2C] font-bold shadow-md active:scale-95 transition-all flex items-center justify-center disabled:opacity-40"
           >
