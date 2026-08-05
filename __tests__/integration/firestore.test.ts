@@ -62,9 +62,9 @@ describe("firestore integration", () => {
 
   describe("UserProfile operations", () => {
     it("should create default profile when snap does not exist", async () => {
-      (firestore.getDoc as any).mockResolvedValueOnce({
+      vi.mocked(firestore.getDoc).mockResolvedValueOnce({
         exists: () => false,
-      });
+      } as unknown as firestore.DocumentSnapshot);
 
       const profile = await ensureUserProfile({ uid: "user-1", email: "test@example.com" }, 4000);
       expect(profile).not.toBeNull();
@@ -74,10 +74,10 @@ describe("firestore integration", () => {
     });
 
     it("should update profile if display name changed", async () => {
-      (firestore.getDoc as any).mockResolvedValueOnce({
+      vi.mocked(firestore.getDoc).mockResolvedValueOnce({
         exists: () => true,
         data: () => ({ uid: "user-1", email: "test@example.com", displayName: "Old Name" }),
-      });
+      } as unknown as firestore.DocumentSnapshot);
 
       const profile = await ensureUserProfile({ uid: "user-1", email: "test@example.com", displayName: "New Name" });
       expect(profile?.displayName).toBe("New Name");
@@ -89,19 +89,19 @@ describe("firestore integration", () => {
     });
 
     it("should get existing user profile", async () => {
-      (firestore.getDoc as any).mockResolvedValueOnce({
+      vi.mocked(firestore.getDoc).mockResolvedValueOnce({
         exists: () => true,
         data: () => ({ uid: "user-1", email: "test@example.com", baseIncome: 5000 }),
-      });
+      } as unknown as firestore.DocumentSnapshot);
 
       const profile = await getUserProfile("user-1");
       expect(profile).toEqual({ uid: "user-1", email: "test@example.com", baseIncome: 5000 });
     });
 
     it("should return null if user profile does not exist", async () => {
-      (firestore.getDoc as any).mockResolvedValueOnce({
+      vi.mocked(firestore.getDoc).mockResolvedValueOnce({
         exists: () => false,
-      });
+      } as unknown as firestore.DocumentSnapshot);
 
       const profile = await getUserProfile("non-existent");
       expect(profile).toBeNull();
@@ -123,26 +123,29 @@ describe("firestore integration", () => {
       expect(callback).toHaveBeenCalledWith({ uid: "user-123", email: "test@example.com" });
       expect(typeof unsubscribe).toBe("function");
     });
+
     it("should handle error in ensureUserProfile gracefully", async () => {
-      (firestore.getDoc as any).mockRejectedValueOnce(new Error("Firestore connection error"));
+      vi.mocked(firestore.getDoc).mockRejectedValueOnce(new Error("Firestore connection error"));
       const profile = await ensureUserProfile({ uid: "err-user" });
       expect(profile).toBeNull();
     });
 
     it("should handle error in getUserProfile gracefully", async () => {
-      (firestore.getDoc as any).mockRejectedValueOnce(new Error("Network error"));
+      vi.mocked(firestore.getDoc).mockRejectedValueOnce(new Error("Network error"));
       const profile = await getUserProfile("err-user");
       expect(profile).toBeNull();
     });
 
     it("should handle error in setUserProfile gracefully", async () => {
-      (firestore.setDoc as any).mockRejectedValueOnce(new Error("Write error"));
+      vi.mocked(firestore.setDoc).mockRejectedValueOnce(new Error("Write error"));
       await expect(setUserProfile({ uid: "err-user", baseIncome: 1000 })).resolves.not.toThrow();
     });
 
     it("should handle permission-denied error in subscribeUserProfile", () => {
-      (firestore.onSnapshot as any).mockImplementationOnce((ref: any, onNext: any, onError: any) => {
-        onError({ code: "permission-denied" });
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((ref: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError({ code: "permission-denied" });
+        }
         return vi.fn();
       });
 
@@ -152,8 +155,10 @@ describe("firestore integration", () => {
     });
 
     it("should handle generic error in subscribeUserProfile", () => {
-      (firestore.onSnapshot as any).mockImplementationOnce((ref: any, onNext: any, onError: any) => {
-        onError(new Error("General snapshot error"));
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((ref: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError(new Error("General snapshot error"));
+        }
         return vi.fn();
       });
 
@@ -211,8 +216,10 @@ describe("firestore integration", () => {
     });
 
     it("should handle permission-denied in subscribeExpenses", () => {
-      (firestore.onSnapshot as any).mockImplementationOnce((query: any, onNext: any, onError: any) => {
-        onError({ code: "permission-denied" });
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError({ code: "permission-denied" });
+        }
         return vi.fn();
       });
 
@@ -222,8 +229,10 @@ describe("firestore integration", () => {
     });
 
     it("should handle generic error in subscribeExpenses", () => {
-      (firestore.onSnapshot as any).mockImplementationOnce((query: any, onNext: any, onError: any) => {
-        onError(new Error("Query error"));
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError(new Error("Query error"));
+        }
         return vi.fn();
       });
 

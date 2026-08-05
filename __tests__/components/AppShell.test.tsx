@@ -10,7 +10,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-let mockUser: any = null;
+let mockUser: unknown = null;
 vi.mock("firebase/auth", () => ({
   onAuthStateChanged: vi.fn((auth, callback) => {
     callback(mockUser);

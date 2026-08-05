@@ -13,7 +13,6 @@ import {
   Settings,
   Wallet,
   LogOut,
-  User as UserIcon,
 } from "lucide-react";
 
 export function Sidebar() {

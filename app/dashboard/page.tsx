@@ -12,11 +12,6 @@ import {
 } from "@/lib/firebase/firestore";
 import { formatCurrency, calculateBudgetAllocation } from "@/lib/budget-engine";
 import {
-  Bell,
-  ArrowDown,
-  ArrowUp,
-  ChevronDown,
-  Wallet,
   TrendingUp,
   TrendingDown,
   Plus,
@@ -30,12 +25,10 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (u) => {
       setUser(u);
-      if (!u) setLoading(false);
     });
     return () => unsubAuth();
   }, []);
@@ -44,7 +37,6 @@ export default function DashboardPage() {
     if (!user) return;
     const unsubProfile = subscribeUserProfile(user.uid, (p) => {
       setProfile(p);
-      setLoading(false);
     });
     const unsubExp = subscribeExpenses(user.uid, (data) => {
       setExpenses(data);
@@ -246,7 +238,7 @@ export default function DashboardPage() {
 
             {expenses.length === 0 ? (
               <div className="p-8 text-center text-xs text-gray-400">
-                Nenhuma transação cadastrada ainda. Clique em "+ Novo Gasto" para registrar.
+                Nenhuma transação cadastrada ainda. Clique em &quot;+ Novo Gasto&quot; para registrar.
               </div>
             ) : (
               <div className="overflow-x-auto">

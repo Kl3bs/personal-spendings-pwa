@@ -65,8 +65,9 @@ export default function LoginPage() {
         await ensureUserProfile(userCred.user);
       }
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Falha na autenticação. Verifique os dados.");
+    } catch (err: unknown) {
+      const authError = err as { message?: string };
+      setError(authError.message || "Falha na autenticação. Verifique os dados.");
     } finally {
       setLoading(false);
     }
@@ -81,9 +82,10 @@ export default function LoginPage() {
         await ensureUserProfile(result.user);
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      console.error("Google login error:", err);
-      if (err.code === "auth/popup-closed-by-user") {
+    } catch (err: unknown) {
+      const authError = err as { code?: string; message?: string };
+      console.error("Google login error:", authError);
+      if (authError.code === "auth/popup-closed-by-user") {
         setLoading(false);
         return;
       }
@@ -91,8 +93,9 @@ export default function LoginPage() {
       // Fallback to redirect if popup fails or is blocked
       try {
         await signInWithRedirect(auth, googleProvider);
-      } catch (redirectErr: any) {
-        setError(redirectErr.message || err.message || "Erro ao entrar com Google.");
+      } catch (redirectErr: unknown) {
+        const redirectAuthError = redirectErr as { message?: string };
+        setError(redirectAuthError.message || authError.message || "Erro ao entrar com Google.");
         setLoading(false);
       }
     }

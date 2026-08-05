@@ -7,21 +7,16 @@ import {
   UserProfile,
   subscribeUserProfile,
   setUserProfile,
-  subscribeExpenses,
-  Expense,
 } from "@/lib/firebase/firestore";
 import { formatCurrency, calculateBudgetAllocation } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, DollarSign, Plus, Edit2, RotateCcw } from "lucide-react";
+import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw } from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isAddingExtra, setIsAddingExtra] = useState(false);
   const [extraValue, setExtraValue] = useState("");
-  const [isEditingBase, setIsEditingBase] = useState(false);
-  const [baseValue, setBaseValue] = useState("");
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (u) => {
@@ -33,10 +28,8 @@ export default function BudgetPage() {
   useEffect(() => {
     if (!user) return;
     const unsubProfile = subscribeUserProfile(user.uid, (p) => setProfile(p));
-    const unsubExp = subscribeExpenses(user.uid, (data) => setExpenses(data));
     return () => {
       unsubProfile();
-      unsubExp();
     };
   }, [user]);
 
@@ -61,14 +54,6 @@ export default function BudgetPage() {
   async function handleResetExtra() {
     if (user) {
       await setUserProfile({ uid: user.uid, extraIncome: 0 });
-    }
-  }
-
-  async function handleSaveBaseIncome() {
-    const val = parseFloat(baseValue);
-    if (!isNaN(val) && val >= 0 && user) {
-      await setUserProfile({ uid: user.uid, baseIncome: val });
-      setIsEditingBase(false);
     }
   }
 
