@@ -14,6 +14,8 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
+import { BudgetCategory } from "@/lib/budget-engine";
+
 export interface Expense {
   id?: string;
   userId: string;
@@ -26,10 +28,11 @@ export interface Expense {
 
 export interface UserProfile {
   uid: string;
-  email: string;
+  email?: string;
   displayName?: string;
   baseIncome: number;
   extraIncome?: number;
+  customCategories?: BudgetCategory[];
   savingsGoalPercent?: number; // e.g. 15 for 15% Pay Yourself First
   completedGoals?: string[]; // IDs of completed checklist goals in Dashboard
   startOfWeek?: string; // e.g. "Sunday" | "Monday"
@@ -102,6 +105,7 @@ export async function setUserProfile(profile: Partial<UserProfile> & { uid: stri
     if (profile.displayName !== undefined) cleanData.displayName = profile.displayName;
     if (profile.baseIncome !== undefined) cleanData.baseIncome = profile.baseIncome;
     if (profile.extraIncome !== undefined) cleanData.extraIncome = profile.extraIncome;
+    if (profile.customCategories !== undefined) cleanData.customCategories = profile.customCategories;
     if (profile.savingsGoalPercent !== undefined) cleanData.savingsGoalPercent = profile.savingsGoalPercent;
     if (profile.completedGoals !== undefined) cleanData.completedGoals = profile.completedGoals;
     if (profile.startOfWeek !== undefined) cleanData.startOfWeek = profile.startOfWeek;
@@ -233,4 +237,116 @@ export function subscribeExpenses(
       onData([]);
     }
   );
+}
+
+// ----------------------------------------------------
+// WALLETS (PATRIMONY) OPERATIONS
+// ----------------------------------------------------
+
+import { Wallet, Contribution } from "@/lib/patrimony-engine";
+
+export async function addWallet(wallet: Omit<Wallet, "id">) {
+  const data: Record<string, unknown> = {
+    userId: wallet.userId,
+    name: wallet.name,
+    createdAt: Timestamp.now(),
+  };
+  if (wallet.color !== undefined) data.color = wallet.color;
+  return await addDoc(collection(db, "wallets"), data);
+}
+
+export function subscribeWallets(
+  userId: string,
+  onData: (wallets: Wallet[]) => void
+) {
+  if (!userId) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(
+    collection(db, "wallets"),
+    where("userId", "==", userId)
+  );
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: Wallet[] = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...(docSnap.data() as Omit<Wallet, "id">),
+      }));
+      onData(list);
+    },
+    (err) => {
+      if (err.code === "permission-denied") {
+        console.warn(
+          "Firestore Permission Error: Permissões insuficientes para acessar 'wallets'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules."
+        );
+      } else {
+        console.error("Error in subscribeWallets:", err);
+      }
+      onData([]);
+    }
+  );
+}
+
+export async function deleteWallet(walletId: string) {
+  return await deleteDoc(doc(db, "wallets", walletId));
+}
+
+// ----------------------------------------------------
+// CONTRIBUTIONS (APORTES) OPERATIONS
+// ----------------------------------------------------
+
+export async function addContribution(contribution: Omit<Contribution, "id">) {
+  const data: Record<string, unknown> = {
+    userId: contribution.userId,
+    walletId: contribution.walletId,
+    amount: contribution.amount,
+    date: contribution.date,
+    createdAt: Timestamp.now(),
+  };
+  if (contribution.note) {
+    data.note = contribution.note;
+  }
+  return await addDoc(collection(db, "contributions"), data);
+}
+
+export function subscribeContributions(
+  userId: string,
+  onData: (contributions: Contribution[]) => void
+) {
+  if (!userId) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(
+    collection(db, "contributions"),
+    where("userId", "==", userId)
+  );
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: Contribution[] = snapshot.docs
+        .map((docSnap) => ({
+          id: docSnap.id,
+          ...(docSnap.data() as Omit<Contribution, "id">),
+        }))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      onData(list);
+    },
+    (err) => {
+      if (err.code === "permission-denied") {
+        console.warn(
+          "Firestore Permission Error: Permissões insuficientes para acessar 'contributions'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules."
+        );
+      } else {
+        console.error("Error in subscribeContributions:", err);
+      }
+      onData([]);
+    }
+  );
+}
+
+export async function deleteContribution(contributionId: string) {
+  return await deleteDoc(doc(db, "contributions", contributionId));
 }

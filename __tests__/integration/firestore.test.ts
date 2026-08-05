@@ -52,6 +52,12 @@ import {
   updateExpense,
   deleteExpense,
   subscribeExpenses,
+  addWallet,
+  subscribeWallets,
+  deleteWallet,
+  addContribution,
+  subscribeContributions,
+  deleteContribution,
 } from "@/lib/firebase/firestore";
 import * as firestore from "firebase/firestore";
 
@@ -238,6 +244,108 @@ describe("firestore integration", () => {
 
       const callback = vi.fn();
       subscribeExpenses("err-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe("Wallet operations", () => {
+    it("should add a wallet", async () => {
+      await addWallet({ userId: "u1", name: "Nubank", color: "#10B981" });
+      expect(firestore.addDoc).toHaveBeenCalled();
+    });
+
+    it("should delete a wallet", async () => {
+      await deleteWallet("w123");
+      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-wallets-w123");
+    });
+
+    it("should return empty array if userId is empty in subscribeWallets", () => {
+      const callback = vi.fn();
+      const unsub = subscribeWallets("", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+      expect(typeof unsub).toBe("function");
+    });
+
+    it("should handle subscribeWallets successfully", () => {
+      const callback = vi.fn();
+      subscribeWallets("u1", callback);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it("should handle permission-denied in subscribeWallets", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError({ code: "permission-denied" });
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeWallets("denied-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+
+    it("should handle generic error in subscribeWallets", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError(new Error("Generic error"));
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeWallets("err-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe("Contribution operations", () => {
+    it("should add a contribution", async () => {
+      await addContribution({ userId: "u1", walletId: "w1", amount: 500, date: "2026-08-01", note: "Aporte inicial" });
+      expect(firestore.addDoc).toHaveBeenCalled();
+    });
+
+    it("should delete a contribution", async () => {
+      await deleteContribution("c123");
+      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-contributions-c123");
+    });
+
+    it("should return empty array if userId is empty in subscribeContributions", () => {
+      const callback = vi.fn();
+      const unsub = subscribeContributions("", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+      expect(typeof unsub).toBe("function");
+    });
+
+    it("should handle subscribeContributions successfully", () => {
+      const callback = vi.fn();
+      subscribeContributions("u1", callback);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it("should handle permission-denied in subscribeContributions", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError({ code: "permission-denied" });
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeContributions("denied-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+
+    it("should handle generic error in subscribeContributions", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError(new Error("Generic error"));
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeContributions("err-user", callback);
       expect(callback).toHaveBeenCalledWith([]);
     });
   });
