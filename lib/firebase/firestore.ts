@@ -273,7 +273,16 @@ export function subscribeWallets(
       }));
       onData(list);
     },
-    () => onData([])
+    (err) => {
+      if (err.code === "permission-denied") {
+        console.warn(
+          "Firestore Permission Error: Permissões insuficientes para acessar 'wallets'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules."
+        );
+      } else {
+        console.error("Error in subscribeWallets:", err);
+      }
+      onData([]);
+    }
   );
 }
 
@@ -316,7 +325,13 @@ export function subscribeContributions(
       onData(list);
     },
     (err) => {
-      console.error("Error in subscribeContributions:", err);
+      if (err.code === "permission-denied") {
+        console.warn(
+          "Firestore Permission Error: Permissões insuficientes para acessar 'contributions'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules."
+        );
+      } else {
+        console.error("Error in subscribeContributions:", err);
+      }
       onData([]);
     }
   );
