@@ -7,9 +7,12 @@ import {
   UserProfile,
   subscribeUserProfile,
   setUserProfile,
+  addInvestment,
+  Investment,
 } from "@/lib/firebase/firestore";
 import { formatCurrency, calculateBudgetAllocation } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
+import { InvestmentForm } from "@/components/investments/InvestmentForm";
 import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw } from "lucide-react";
 
 export default function BudgetPage() {
@@ -17,6 +20,7 @@ export default function BudgetPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isAddingExtra, setIsAddingExtra] = useState(false);
   const [extraValue, setExtraValue] = useState("");
+  const [isPayFirstOpen, setIsPayFirstOpen] = useState(false);
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (u) => {
@@ -55,6 +59,10 @@ export default function BudgetPage() {
     if (user) {
       await setUserProfile({ uid: user.uid, extraIncome: 0 });
     }
+  }
+
+  async function handleSaveInvestment(data: Omit<Investment, "id" | "createdAt">) {
+    await addInvestment(data);
   }
 
   return (
@@ -112,11 +120,30 @@ export default function BudgetPage() {
               {formatCurrency(allocation.investments)}
             </div>
           </div>
-          <button className="py-2 px-4 bg-white text-[#7C3AED] text-xs font-bold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all">
+          <button
+            onClick={() => setIsPayFirstOpen(true)}
+            className="py-2 px-4 bg-white text-[#7C3AED] text-xs font-bold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all"
+          >
             Pagar Primeiro
           </button>
         </div>
       </div>
+
+      {/* Pay Yourself First Investment Form Modal */}
+      {isPayFirstOpen && user && (
+        <InvestmentForm
+          userId={user.uid}
+          initialData={{
+            userId: user.uid,
+            amount: allocation.investments,
+            category: "renda_fixa",
+            description: "Aporte Mensal (Pay Yourself First)",
+            date: new Date().toISOString().split("T")[0],
+          }}
+          onSave={handleSaveInvestment}
+          onClose={() => setIsPayFirstOpen(false)}
+        />
+      )}
 
       {/* Extra Income Modal */}
       {isAddingExtra && (

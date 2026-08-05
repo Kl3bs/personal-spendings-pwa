@@ -84,7 +84,7 @@ export function InvestmentForm({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <h2 className="text-lg font-bold font-heading text-[#1E293B]">
-            {initialData ? "Editar Investimento" : "Novo Aporte de Investimento"}
+            {initialData?.id ? "Editar Investimento" : "Novo Aporte de Investimento"}
           </h2>
           <button
             type="button"
