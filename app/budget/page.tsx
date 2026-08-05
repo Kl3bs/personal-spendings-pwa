@@ -12,11 +12,24 @@ import {
   Investment,
   BudgetCategoryConfig,
 } from "@/lib/firebase/firestore";
-import { formatCurrency, calculateBudgetAllocation, calculateInvestmentStats } from "@/lib/budget-engine";
+import {
+  formatCurrency,
+  calculateBudgetAllocation,
+  calculateInvestmentStats,
+} from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
 import { InvestmentForm } from "@/components/investments/InvestmentForm";
 import { BudgetCategoryModal } from "@/components/budget/BudgetCategoryModal";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, CheckCircle2, SlidersHorizontal } from "lucide-react";
+import {
+  Sparkles,
+  ShieldCheck,
+  HeartHandshake,
+  GraduationCap,
+  Plus,
+  RotateCcw,
+  CheckCircle2,
+  SlidersHorizontal,
+} from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -37,7 +50,9 @@ export default function BudgetPage() {
   useEffect(() => {
     if (!user) return;
     const unsubProfile = subscribeUserProfile(user.uid, (p) => setProfile(p));
-    const unsubInvestments = subscribeInvestments(user.uid, (data) => setInvestments(data));
+    const unsubInvestments = subscribeInvestments(user.uid, (data) =>
+      setInvestments(data),
+    );
     return () => {
       unsubProfile();
       unsubInvestments();
@@ -46,7 +61,11 @@ export default function BudgetPage() {
 
   const baseIncome = profile?.baseIncome || 3500;
   const extraIncome = profile?.extraIncome || 0;
-  const allocation = calculateBudgetAllocation(baseIncome, extraIncome, profile?.budgetCategories);
+  const allocation = calculateBudgetAllocation(
+    baseIncome,
+    extraIncome,
+    profile?.budgetCategories,
+  );
   const stats = calculateInvestmentStats(allocation.totalIncome, investments);
   const isMetaReached = stats.isTargetReached && stats.targetInvested > 0;
 
@@ -71,7 +90,9 @@ export default function BudgetPage() {
     }
   }
 
-  async function handleSaveInvestment(data: Omit<Investment, "id" | "createdAt">) {
+  async function handleSaveInvestment(
+    data: Omit<Investment, "id" | "createdAt">,
+  ) {
     await addInvestment(data);
   }
 
@@ -86,8 +107,12 @@ export default function BudgetPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">Orçamento & Metas</h1>
-          <p className="text-xs text-[#2C2C2C]/60">Metodologia Pay Yourself First</p>
+          <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">
+            Orçamento & Metas
+          </h1>
+          <p className="text-xs text-[#2C2C2C]/60">
+            Metodologia Pay Yourself First
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {extraIncome > 0 && (
@@ -126,7 +151,9 @@ export default function BudgetPage() {
               🎯 Boleto Obrigatório Nº 1
             </span>
             <h2 className="text-xl font-bold font-heading pt-1">
-              Para {userName.toLowerCase() === "você" ? "o Seu" : `o ${userName}`} Futuro
+              Para{" "}
+              {userName.toLowerCase() === "você" ? "o Seu" : `o ${userName}`}{" "}
+              Futuro
             </h2>
             <p className="text-xs opacity-80">
               {isMetaReached
@@ -193,9 +220,12 @@ export default function BudgetPage() {
       {isAddingExtra && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-xs w-full space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-[#2C2C2C]">Adicionar Renda Extra</h3>
+            <h3 className="text-sm font-bold text-[#2C2C2C]">
+              Adicionar Renda Extra
+            </h3>
             <p className="text-xs text-[#2C2C2C]/60">
-              Entrou algum freela ou extra? Digite o valor para recalcular o orçamento:
+              Entrou algum freela ou extra? Digite o valor para recalcular o
+              orçamento:
             </p>
             <input
               type="number"
@@ -225,24 +255,32 @@ export default function BudgetPage() {
       {/* Budget Allocation Cards Grid */}
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <h2 className="text-sm font-bold text-[#2C2C2C]">Distribuição do Orçamento</h2>
+          <h2 className="text-sm font-bold text-[#2C2C2C]">
+            Distribuição do Orçamento
+          </h2>
           <button
             onClick={() => setIsCustomizingModalOpen(true)}
-            className="text-xs font-semibold text-[#0F766E] hover:underline flex items-center gap-1"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0F766E]/10 hover:bg-[#0F766E]/20 text-[#0F766E] rounded-2xl text-xs font-bold transition-all active:scale-95 border border-[#0F766E]/20 shadow-2xs"
           >
-            <SlidersHorizontal className="w-3 h-3" />
-            <span>Editar %</span>
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>Editar Distribuição</span>
           </button>
         </div>
 
         <div className="grid grid-cols-1 gap-3">
           {allocation.categories.map((cat) => (
-            <div key={cat.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
+            <div
+              key={cat.id}
+              className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2"
+            >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <div
                     className="w-8 h-8 rounded-xl flex items-center justify-center text-sm"
-                    style={{ backgroundColor: `${cat.color || "#0F766E"}1A`, color: cat.color || "#0F766E" }}
+                    style={{
+                      backgroundColor: `${cat.color || "#0F766E"}1A`,
+                      color: cat.color || "#0F766E",
+                    }}
                   >
                     {cat.icon || "💰"}
                   </div>
