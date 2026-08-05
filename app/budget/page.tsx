@@ -11,11 +11,12 @@ import {
 import {
   formatCurrency,
   calculateCustomBudgetAllocation,
+  removeBudgetCategory,
   DEFAULT_BUDGET_CATEGORIES,
   BudgetCategory,
 } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
-import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, FolderPlus } from "lucide-react";
+import { Sparkles, ShieldCheck, HeartHandshake, GraduationCap, Plus, RotateCcw, FolderPlus, Trash2 } from "lucide-react";
 
 export default function BudgetPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -93,6 +94,13 @@ export default function BudgetPage() {
       setCategoryName("");
       setCategoryPercentage("");
       setIsAddingCategory(false);
+    }
+  }
+
+  async function handleRemoveCategory(categoryId: string) {
+    if (user) {
+      const updated = removeBudgetCategory(categories, categoryId);
+      await setUserProfile({ uid: user.uid, customCategories: updated });
     }
   }
 
@@ -272,8 +280,19 @@ export default function BudgetPage() {
                     )}
                   </div>
                 </div>
-                <div className="text-sm font-bold text-[#2C2C2C]">
-                  {formatCurrency(amount)}
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-bold text-[#2C2C2C]">
+                    {formatCurrency(amount)}
+                  </div>
+                  {categories.length > 1 && (
+                    <button
+                      onClick={() => handleRemoveCategory(category.id)}
+                      className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                      title="Excluir categoria"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

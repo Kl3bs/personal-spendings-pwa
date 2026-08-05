@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   calculateBudgetAllocation,
   calculateCustomBudgetAllocation,
+  removeBudgetCategory,
   DEFAULT_BUDGET_CATEGORIES,
   formatCurrency,
 } from "@/lib/budget-engine";
@@ -86,6 +87,18 @@ describe("budget-engine", () => {
       expect(result).toHaveLength(DEFAULT_BUDGET_CATEGORIES.length);
       const necessities = result.find((r) => r.category.id === "necessities");
       expect(necessities?.amount).toBe(550); // 55% of 1000
+    });
+  });
+
+  describe("removeBudgetCategory", () => {
+    it("should remove category by id from categories list", () => {
+      const categories = [
+        { id: "cat1", name: "Moradia", percentage: 50 },
+        { id: "cat2", name: "Lazer", percentage: 20 },
+      ];
+      const updated = removeBudgetCategory(categories, "cat1");
+      expect(updated).toHaveLength(1);
+      expect(updated[0].id).toBe("cat2");
     });
   });
 });

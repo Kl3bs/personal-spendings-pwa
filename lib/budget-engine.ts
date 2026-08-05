@@ -39,6 +39,13 @@ export function calculateCustomBudgetAllocation(
   }));
 }
 
+export function removeBudgetCategory(
+  categories: BudgetCategory[],
+  categoryId: string
+): BudgetCategory[] {
+  return categories.filter((cat) => cat.id !== categoryId);
+}
+
 export function calculateBudgetAllocation(baseIncome: number, extraIncome: number = 0): BudgetAllocation {
   const total = Math.max(0, baseIncome + extraIncome);
   return {
