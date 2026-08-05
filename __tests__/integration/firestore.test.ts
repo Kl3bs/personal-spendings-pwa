@@ -52,6 +52,10 @@ import {
   updateExpense,
   deleteExpense,
   subscribeExpenses,
+  addInvestment,
+  updateInvestment,
+  deleteInvestment,
+  subscribeInvestments,
 } from "@/lib/firebase/firestore";
 import * as firestore from "firebase/firestore";
 
@@ -241,4 +245,67 @@ describe("firestore integration", () => {
       expect(callback).toHaveBeenCalledWith([]);
     });
   });
+
+  describe("Investment operations", () => {
+    it("should add a new investment with timestamp", async () => {
+      const invData = {
+        userId: "user-123",
+        amount: 500,
+        category: "renda_fixa" as const,
+        description: "CDB 100% CDI",
+        date: "2026-08-01",
+      };
+      await addInvestment(invData);
+
+      expect(firestore.collection).toHaveBeenCalledWith({}, "investments");
+      expect(firestore.addDoc).toHaveBeenCalledWith("expenses-collection-ref", {
+        ...invData,
+        createdAt: "timestamp-mock",
+      });
+    });
+
+    it("should update an existing investment", async () => {
+      await updateInvestment("inv-123", { amount: 600 });
+      expect(firestore.updateDoc).toHaveBeenCalledWith("doc-ref-investments-inv-123", { amount: 600 });
+    });
+
+    it("should delete an investment", async () => {
+      await deleteInvestment("inv-123");
+      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-investments-inv-123");
+    });
+
+    it("should return empty unsubscribe if userId is missing in subscribeInvestments", () => {
+      const callback = vi.fn();
+      const unsub = subscribeInvestments("", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+      expect(typeof unsub).toBe("function");
+    });
+
+    it("should handle permission-denied in subscribeInvestments", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError({ code: "permission-denied" });
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeInvestments("denied-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+
+    it("should handle generic error in subscribeInvestments", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError(new Error("Query error"));
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeInvestments("err-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+  });
 });
+

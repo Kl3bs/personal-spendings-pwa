@@ -13,5 +13,12 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
     }
 
+    // Regras para investimentos: Usuários autenticados podem gerenciar apenas seus próprios investimentos
+    match /investments/{investmentId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+    }
+
   }
 }
+
