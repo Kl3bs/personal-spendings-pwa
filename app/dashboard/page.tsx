@@ -37,7 +37,6 @@ export default function DashboardPage() {
     if (!user) return;
     const unsubProfile = subscribeUserProfile(user.uid, (p) => {
       setProfile(p);
-      setLoading(false);
     });
     const unsubExp = subscribeExpenses(user.uid, (data) => {
       setExpenses(data);
