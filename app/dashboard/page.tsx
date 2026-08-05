@@ -5,12 +5,19 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import {
   Expense,
+  Investment,
   UserProfile,
   subscribeUserProfile,
   subscribeExpenses,
+  subscribeInvestments,
   setUserProfile,
 } from "@/lib/firebase/firestore";
-import { formatCurrency, calculateBudgetAllocation } from "@/lib/budget-engine";
+import {
+  formatCurrency,
+  calculateBudgetAllocation,
+  calculateInvestmentStats,
+  calculateNetBalance,
+} from "@/lib/budget-engine";
 import {
   TrendingUp,
   TrendingDown,
@@ -25,6 +32,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [investments, setInvestments] = useState<Investment[]>([]);
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (u) => {
@@ -41,9 +49,13 @@ export default function DashboardPage() {
     const unsubExp = subscribeExpenses(user.uid, (data) => {
       setExpenses(data);
     });
+    const unsubInv = subscribeInvestments(user.uid, (data) => {
+      setInvestments(data);
+    });
     return () => {
       unsubProfile();
       unsubExp();
+      unsubInv();
     };
   }, [user]);
 
@@ -52,7 +64,12 @@ export default function DashboardPage() {
   const extraIncome = profile?.extraIncome || 0;
   const allocation = calculateBudgetAllocation(baseIncome, extraIncome);
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const currentBalance = allocation.totalIncome - totalExpenses;
+  const investmentStats = calculateInvestmentStats(allocation.totalIncome, investments);
+  const currentBalance = calculateNetBalance(
+    allocation.totalIncome,
+    totalExpenses,
+    investmentStats.totalInvested
+  );
   const userName =
     profile?.displayName ||
     user?.displayName ||
@@ -120,17 +137,26 @@ export default function DashboardPage() {
         </div>
 
         {/* Card 3: Total Savings (15% PYF) */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
+        <Link
+          href="/investments"
+          className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2 hover:border-[#F9D19C] hover:shadow-sm transition-all group block"
+        >
           <div className="flex justify-between items-center text-indigo-600 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <PiggyBank className="w-3.5 h-3.5" /> 15% PYF
             </span>
+            <span className="text-[10px] text-gray-400 group-hover:text-indigo-600 font-normal">
+              Ver mais →
+            </span>
           </div>
-          <div className="text-xs text-gray-500">Investimento (Futuro)</div>
+          <div className="text-xs text-gray-500">Investimento Realizado</div>
           <div className="text-xl md:text-2xl font-extrabold font-heading text-indigo-600">
-            {formatCurrency(allocation.investments)}
+            {formatCurrency(investmentStats.totalInvested)}
           </div>
-        </div>
+          <div className="text-[10px] text-gray-400 font-medium">
+            Meta: {formatCurrency(allocation.investments)}
+          </div>
+        </Link>
 
         {/* Card 4: Total Expenses */}
         <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
