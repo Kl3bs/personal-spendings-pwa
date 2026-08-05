@@ -14,6 +14,23 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
+export type InvestmentCategory =
+  | "renda_fixa"
+  | "acoes_fiis"
+  | "reserva_emergencia"
+  | "cripto"
+  | "outros";
+
+export interface Investment {
+  id?: string;
+  userId: string;
+  amount: number;
+  category: InvestmentCategory;
+  description: string;
+  date: string; // ISO format string YYYY-MM-DD
+  createdAt?: Timestamp;
+}
+
 export interface Expense {
   id?: string;
   userId: string;
@@ -234,3 +251,78 @@ export function subscribeExpenses(
     }
   );
 }
+
+/**
+ * Add a new investment record for a user.
+ */
+export async function addInvestment(
+  investment: Omit<Investment, "id" | "createdAt">
+) {
+  const ref = collection(db, "investments");
+  return await addDoc(ref, {
+    ...investment,
+    createdAt: Timestamp.now(),
+  });
+}
+
+/**
+ * Update an existing investment record.
+ */
+export async function updateInvestment(
+  id: string,
+  investmentData: Partial<Investment>
+) {
+  const ref = doc(db, "investments", id);
+  await updateDoc(ref, investmentData);
+}
+
+/**
+ * Delete an investment record.
+ */
+export async function deleteInvestment(id: string) {
+  const ref = doc(db, "investments", id);
+  await deleteDoc(ref);
+}
+
+/**
+ * Subscribe to real-time investment records filtered by userId.
+ */
+export function subscribeInvestments(
+  userId: string,
+  onData: (investments: Investment[]) => void
+) {
+  if (!userId) {
+    onData([]);
+    return () => {};
+  }
+
+  const q = query(
+    collection(db, "investments"),
+    where("userId", "==", userId),
+    orderBy("date", "desc")
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: Investment[] = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...(docSnap.data() as Omit<Investment, "id">),
+      }));
+      onData(list);
+    },
+    (err) => {
+      if (err.code === "permission-denied") {
+        console.warn(
+          "Firestore Permission Error: Permissões insuficientes para acessar 'investments' do usuário '" +
+            userId +
+            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules."
+        );
+      } else {
+        console.error("Error in subscribeInvestments:", err);
+      }
+      onData([]);
+    }
+  );
+}
+
