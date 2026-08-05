@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { calculateBudgetAllocation, formatCurrency } from "@/lib/budget-engine";
+import {
+  calculateBudgetAllocation,
+  calculateCustomBudgetAllocation,
+  DEFAULT_BUDGET_CATEGORIES,
+  formatCurrency,
+} from "@/lib/budget-engine";
 
 describe("budget-engine", () => {
   describe("calculateBudgetAllocation", () => {
@@ -61,4 +65,27 @@ describe("budget-engine", () => {
       expect(formatted).toContain("500,00");
     });
   });
+
+  describe("calculateCustomBudgetAllocation", () => {
+    it("should calculate allocations for custom categories list", () => {
+      const customCategories = [
+        { id: "cat1", name: "Moradia", percentage: 50 },
+        { id: "cat2", name: "Investimentos", percentage: 20 },
+        { id: "cat3", name: "Assinaturas", percentage: 10 },
+      ];
+      const result = calculateCustomBudgetAllocation(5000, customCategories);
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({ category: customCategories[0], amount: 2500 });
+      expect(result[1]).toEqual({ category: customCategories[1], amount: 1000 });
+      expect(result[2]).toEqual({ category: customCategories[2], amount: 500 });
+    });
+
+    it("should use DEFAULT_BUDGET_CATEGORIES when no categories are passed", () => {
+      const result = calculateCustomBudgetAllocation(1000);
+      expect(result).toHaveLength(DEFAULT_BUDGET_CATEGORIES.length);
+      const necessities = result.find((r) => r.category.id === "necessities");
+      expect(necessities?.amount).toBe(550); // 55% of 1000
+    });
+  });
 });
+

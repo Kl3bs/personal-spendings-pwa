@@ -14,6 +14,8 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
+import { BudgetCategory } from "@/lib/budget-engine";
+
 export interface Expense {
   id?: string;
   userId: string;
@@ -26,10 +28,11 @@ export interface Expense {
 
 export interface UserProfile {
   uid: string;
-  email: string;
+  email?: string;
   displayName?: string;
   baseIncome: number;
   extraIncome?: number;
+  customCategories?: BudgetCategory[];
   savingsGoalPercent?: number; // e.g. 15 for 15% Pay Yourself First
   completedGoals?: string[]; // IDs of completed checklist goals in Dashboard
   startOfWeek?: string; // e.g. "Sunday" | "Monday"
