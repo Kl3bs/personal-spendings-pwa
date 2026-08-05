@@ -237,3 +237,86 @@ export function subscribeExpenses(
     }
   );
 }
+
+// ----------------------------------------------------
+// WALLETS (PATRIMONY) OPERATIONS
+// ----------------------------------------------------
+
+import { Wallet, Contribution } from "@/lib/patrimony-engine";
+
+export async function addWallet(wallet: Omit<Wallet, "id">) {
+  return await addDoc(collection(db, "wallets"), {
+    ...wallet,
+    createdAt: Timestamp.now(),
+  });
+}
+
+export function subscribeWallets(
+  userId: string,
+  onData: (wallets: Wallet[]) => void
+) {
+  if (!userId) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(
+    collection(db, "wallets"),
+    where("userId", "==", userId)
+  );
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: Wallet[] = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...(docSnap.data() as Omit<Wallet, "id">),
+      }));
+      onData(list);
+    },
+    () => onData([])
+  );
+}
+
+export async function deleteWallet(walletId: string) {
+  return await deleteDoc(doc(db, "wallets", walletId));
+}
+
+// ----------------------------------------------------
+// CONTRIBUTIONS (APORTES) OPERATIONS
+// ----------------------------------------------------
+
+export async function addContribution(contribution: Omit<Contribution, "id">) {
+  return await addDoc(collection(db, "contributions"), {
+    ...contribution,
+    createdAt: Timestamp.now(),
+  });
+}
+
+export function subscribeContributions(
+  userId: string,
+  onData: (contributions: Contribution[]) => void
+) {
+  if (!userId) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(
+    collection(db, "contributions"),
+    where("userId", "==", userId),
+    orderBy("date", "desc")
+  );
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: Contribution[] = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...(docSnap.data() as Omit<Contribution, "id">),
+      }));
+      onData(list);
+    },
+    () => onData([])
+  );
+}
+
+export async function deleteContribution(contributionId: string) {
+  return await deleteDoc(doc(db, "contributions", contributionId));
+}
