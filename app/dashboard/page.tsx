@@ -11,7 +11,6 @@ import {
   subscribeExpenses,
   subscribeInvestments,
   setUserProfile,
-  addExpensesBatch,
 } from "@/lib/firebase/firestore";
 import {
   formatCurrency,
@@ -28,19 +27,10 @@ import {
   Circle,
   PiggyBank,
   Info,
-  Zap,
   Pin,
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-
-const BatchExpenseModal = dynamic(
-  () =>
-    import("@/components/expenses/BatchExpenseModal").then(
-      (mod) => mod.BatchExpenseModal,
-    ),
-  { ssr: false },
-);
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
