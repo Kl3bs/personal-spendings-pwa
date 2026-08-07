@@ -3,7 +3,7 @@ import { initializeApp, getApps } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
 import * as Papa from "papaparse";
 import * as XLSX from "xlsx";
-const pdfParse = require("pdf-parse");
+import pdfParse from "pdf-parse";
 
 if (!getApps().length) {
   initializeApp();
@@ -53,7 +53,7 @@ function normalizeDate(rawDate: string): string {
   return todayStr;
 }
 
-function parseAmount(val: any): number {
+function parseAmount(val: unknown): number {
   if (typeof val === "number") return Math.abs(val);
   if (!val) return 0;
   let str = String(val).trim().replace(/R\$\s?/gi, "");
@@ -114,18 +114,18 @@ export function parseXlsxBuffer(buffer: Buffer): ParsedExpenseItem[] {
   const workbook = XLSX.read(buffer, { type: "buffer" });
   const firstSheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[firstSheetName];
-  const rows: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  const rows: unknown[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
   const results: ParsedExpenseItem[] = [];
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    if (!row || row.length < 2) continue;
+    if (!Array.isArray(row) || row.length < 2) continue;
     const rowStr = row.join(" ").toLowerCase();
     if (rowStr.includes("descrição") && rowStr.includes("valor")) continue;
 
     let dateVal = "";
     let descVal = "";
-    let amountVal: any = null;
+    let amountVal: unknown = null;
 
     for (const cell of row) {
       if (cell === null || cell === undefined) continue;
@@ -207,51 +207,52 @@ export function filterCurrentMonth(items: ParsedExpenseItem[]): ParsedExpenseIte
  */
 export const parseBankStatement = functions.https.onCall(
   { cors: true, minInstances: 0, maxInstances: 10 },
-  async (request: any, context?: any) => {
+  async (request: unknown, context?: unknown) => {
+    const reqObj = request as { auth?: unknown; data?: ParseRequest } | undefined;
+    const ctxObj = context as { auth?: unknown } | undefined;
 
+    // Support both v1 (data, context) signature and v2 (request) signature
+    const auth = reqObj?.auth || ctxObj?.auth;
+    const payload: ParseRequest = (reqObj?.data as ParseRequest) || (request as ParseRequest) || {};
 
-
-  // Support both v1 (data, context) signature and v2 (request) signature
-  const auth = request?.auth || context?.auth;
-  const payload: ParseRequest = request?.data || request || {};
-
-  if (!auth) {
-    throw new functions.https.HttpsError("unauthenticated", "Usuário precisa estar autenticado.");
-  }
-
-  const { storagePath, fileType, onlyCurrentMonth } = payload;
-  if (!storagePath || !fileType) {
-    throw new functions.https.HttpsError("invalid-argument", "storagePath e fileType são obrigatórios.");
-  }
-
-  try {
-    const bucketName = process.env.STORAGE_BUCKET || "personal-spendings-533fc.firebasestorage.app";
-    const bucket = getStorage().bucket(bucketName);
-    const file = bucket.file(storagePath);
-    const [fileBuffer] = await file.download();
-
-    let items: ParsedExpenseItem[] = [];
-
-    if (fileType === "csv") {
-      const csvText = fileBuffer.toString("utf-8");
-      items = parseCsvContent(csvText);
-    } else if (fileType === "xlsx") {
-      items = parseXlsxBuffer(fileBuffer);
-    } else if (fileType === "pdf") {
-      const parseFn = typeof pdfParse === "function" ? pdfParse : (pdfParse as any).default || pdfParse;
-      const pdfData = await parseFn(fileBuffer);
-      items = parsePdfText(pdfData.text);
-    } else {
-      throw new functions.https.HttpsError("invalid-argument", "Formato não suportado.");
+    if (!auth) {
+      throw new functions.https.HttpsError("unauthenticated", "Usuário precisa estar autenticado.");
     }
 
-    if (onlyCurrentMonth) {
-      items = filterCurrentMonth(items);
+    const { storagePath, fileType, onlyCurrentMonth } = payload;
+    if (!storagePath || !fileType) {
+      throw new functions.https.HttpsError("invalid-argument", "storagePath e fileType são obrigatórios.");
     }
 
-    return items;
-  } catch (error: any) {
-    console.error("Erro na Cloud Function parseBankStatement:", error);
-    throw new functions.https.HttpsError("internal", `Erro ao processar extrato: ${error.message}`);
+    try {
+      const bucketName = process.env.STORAGE_BUCKET || "personal-spendings-533fc.firebasestorage.app";
+      const bucket = getStorage().bucket(bucketName);
+      const file = bucket.file(storagePath);
+      const [fileBuffer] = await file.download();
+
+      let items: ParsedExpenseItem[] = [];
+
+      if (fileType === "csv") {
+        const csvText = fileBuffer.toString("utf-8");
+        items = parseCsvContent(csvText);
+      } else if (fileType === "xlsx") {
+        items = parseXlsxBuffer(fileBuffer);
+      } else if (fileType === "pdf") {
+        const pdfData = await pdfParse(fileBuffer);
+        items = parsePdfText(pdfData.text);
+      } else {
+        throw new functions.https.HttpsError("invalid-argument", "Formato não suportado.");
+      }
+
+      if (onlyCurrentMonth) {
+        items = filterCurrentMonth(items);
+      }
+
+      return items;
+    } catch (error: unknown) {
+      console.error("Erro na Cloud Function parseBankStatement:", error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      throw new functions.https.HttpsError("internal", `Erro ao processar extrato: ${errorMsg}`);
+    }
   }
-});
+);

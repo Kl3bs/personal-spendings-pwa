@@ -73,7 +73,7 @@ function normalizeDate(rawDate: string): string {
 /**
  * Parses numeric amount strings (e.g. "-150.50", "R$ 45,00", "154,50") into positive number
  */
-function parseAmount(val: any): number {
+function parseAmount(val: unknown): number {
   if (typeof val === "number") {
     return Math.abs(val);
   }
@@ -156,12 +156,12 @@ export function parseXlsxStatement(buffer: Buffer | ArrayBuffer): ParsedExpenseI
   const firstSheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[firstSheetName];
 
-  const rows: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  const rows: unknown[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
   const results: ParsedExpenseItem[] = [];
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    if (!row || row.length < 2) continue;
+    if (!Array.isArray(row) || row.length < 2) continue;
 
     // Skip headers if line contains words like "Data", "Descrição"
     const rowStr = row.join(" ").toLowerCase();
@@ -169,7 +169,7 @@ export function parseXlsxStatement(buffer: Buffer | ArrayBuffer): ParsedExpenseI
 
     let dateVal = "";
     let descVal = "";
-    let amountVal: any = null;
+    let amountVal: unknown = null;
 
     for (const cell of row) {
       if (cell === null || cell === undefined) continue;

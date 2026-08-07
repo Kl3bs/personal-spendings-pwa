@@ -152,12 +152,13 @@ export function BatchExpenseModal({
       }));
 
       setItems(newItems);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro ao importar extrato bancário:", err);
-      setError(
-        err?.message ||
-          "Erro ao importar e processar o extrato. Tente novamente.",
-      );
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Erro ao importar e processar o extrato. Tente novamente.";
+      setError(errorMessage);
     } finally {
       setUploadingStatement(false);
       // Reset input value so same file can be re-uploaded if needed

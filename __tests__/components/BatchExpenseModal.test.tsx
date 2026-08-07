@@ -118,7 +118,7 @@ describe("BatchExpenseModal component", () => {
         { description: "Padaria Real", amount: 25.50, date: "2026-08-06", category: "essencial", isMonthlyBill: false },
       ],
     });
-    vi.mocked(httpsCallable).mockReturnValue(mockCallable as any);
+    vi.mocked(httpsCallable).mockReturnValue(mockCallable as unknown as ReturnType<typeof httpsCallable>);
 
     render(
       <BatchExpenseModal
@@ -175,7 +175,7 @@ describe("BatchExpenseModal component", () => {
     });
 
     const mockCallable = vi.fn().mockResolvedValue({ data: [] });
-    vi.mocked(httpsCallable).mockReturnValue(mockCallable as any);
+    vi.mocked(httpsCallable).mockReturnValue(mockCallable as unknown as ReturnType<typeof httpsCallable>);
 
     render(
       <BatchExpenseModal
