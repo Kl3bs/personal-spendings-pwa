@@ -21,7 +21,7 @@ describe("ThemeToggle Component", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("should cycle themes when clicked", async () => {
+  it("should toggle theme between light and dark when clicked", async () => {
     const user = userEvent.setup();
     render(
       <ThemeProvider defaultTheme="light">
@@ -37,9 +37,6 @@ describe("ThemeToggle Component", () => {
     // Click -> dark
     await user.click(button);
     expect(document.documentElement.classList.contains("dark")).toBe(true);
-
-    // Click -> system
-    await user.click(button);
 
     // Click -> light
     await user.click(button);

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #FFFCF8;
   --foreground: #2C2C2C;
@@ -21,8 +23,8 @@
   --surface: #1E293B;
   --dock-bg: #1E293B;
   --text-muted: rgba(255, 255, 255, 0.6);
+  color-scheme: dark;
 }
-
 
 @theme {
   --color-bg-warm: #FFFCF8;
@@ -47,6 +49,45 @@ body {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
+/* Base dark mode overrides for cards, panels, and borders */
+.dark .bg-white {
+  background-color: #1E293B;
+  color: #F8FAFC;
+}
+
+.dark .bg-\[\#FFFCF8\] {
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
+.dark .bg-gray-50 {
+  background-color: #1E293B;
+  color: #F8FAFC;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #334155;
+}
+
+.dark .text-\[\#1E293B\],
+.dark .text-\[\#2C2C2C\] {
+  color: #F8FAFC;
+}
+
+.dark .text-gray-500,
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  color: #CBD5E1;
 }
 
 /* Ocultar setas clicáveis de incremento/decrecimento em inputs numéricos */

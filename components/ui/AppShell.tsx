@@ -49,7 +49,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (!user) return;
     const unsubProfile = subscribeUserProfile(user.uid, (p) => {
       setProfile(p);
-      if (p?.theme) {
+      const storedLocal = localStorage.getItem("theme-preference");
+      if (p?.theme && !storedLocal) {
         const themeVal = p.theme.toLowerCase();
         if (themeVal === "light" || themeVal === "dark" || themeVal === "system") {
           setTheme(themeVal as "light" | "dark" | "system");
@@ -102,6 +103,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#0F172A] text-[#2C2C2C] dark:text-[#F8FAFC] flex flex-col font-sans transition-colors duration-200">
+      {/* Top Navbar Header (Mobile Bar) */}
+      <header className="flex md:hidden items-center justify-between px-4 py-3 bg-white dark:bg-[#1E293B] border-b border-gray-100 dark:border-slate-800 sticky top-0 z-40 shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 bg-[#4285F4] rounded-xl flex items-center justify-center text-white font-bold shadow-xs">
+            <Wallet className="w-4 h-4 stroke-[2.5]" />
+          </div>
+          <span className="font-bold font-heading text-base text-[#1E293B] dark:text-white">
+            BudgetNest
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <div className="w-7 h-7 rounded-full bg-[#F9D19C] text-[#2C2C2C] font-bold text-xs flex items-center justify-center border border-white dark:border-slate-800 shadow-xs">
+            {userName.charAt(0).toUpperCase()}
+          </div>
+        </div>
+      </header>
+
       {/* Top Navbar Header (Desktop) */}
       <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white dark:bg-[#1E293B] border-b border-gray-100 dark:border-slate-800 sticky top-0 z-40">
         <div className="flex items-center gap-3">
