@@ -127,7 +127,7 @@ export function BatchExpenseModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl space-y-5 relative border border-gray-100 animate-in fade-in zoom-in-95 duration-200 my-8">
+      <div className="bg-white w-full max-w-4xl lg:max-w-5xl rounded-3xl p-6 shadow-2xl space-y-5 relative border border-gray-100 animate-in fade-in zoom-in-95 duration-200 my-8 overflow-x-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
           <div className="flex items-center gap-2.5">
