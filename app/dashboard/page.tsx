@@ -30,7 +30,6 @@ import {
   Pin,
 } from "lucide-react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
