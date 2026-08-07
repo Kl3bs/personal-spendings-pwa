@@ -11,6 +11,7 @@ import {
   where,
   orderBy,
   Timestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./config";
 
@@ -38,6 +39,7 @@ export interface Expense {
   category: "essencial" | "importante" | "superfluo";
   description: string;
   date: string; // ISO format string YYYY-MM-DD
+  isMonthlyBill?: boolean;
   createdAt?: Timestamp;
 }
 
@@ -73,7 +75,7 @@ export interface UserProfile {
  */
 export async function ensureUserProfile(
   user: { uid: string; email?: string | null; displayName?: string | null },
-  initialBaseIncome?: number
+  initialBaseIncome?: number,
 ): Promise<UserProfile | null> {
   try {
     const ref = doc(db, "users", user.uid);
@@ -101,8 +103,10 @@ export async function ensureUserProfile(
       // Merge only non-destructive updates (like updated display name or email if changed)
       const existing = snap.data() as UserProfile;
       const updates: Record<string, unknown> = { updatedAt: Timestamp.now() };
-      if (user.email && user.email !== existing.email) updates.email = user.email;
-      if (user.displayName && user.displayName !== existing.displayName) updates.displayName = user.displayName;
+      if (user.email && user.email !== existing.email)
+        updates.email = user.email;
+      if (user.displayName && user.displayName !== existing.displayName)
+        updates.displayName = user.displayName;
 
       if (Object.keys(updates).length > 1) {
         await setDoc(ref, updates, { merge: true });
@@ -118,7 +122,9 @@ export async function ensureUserProfile(
 /**
  * Updates specific fields of a user profile in Firestore.
  */
-export async function setUserProfile(profile: Partial<UserProfile> & { uid: string }) {
+export async function setUserProfile(
+  profile: Partial<UserProfile> & { uid: string },
+) {
   try {
     const ref = doc(db, "users", profile.uid);
     const cleanData: Record<string, unknown> = {
@@ -126,14 +132,24 @@ export async function setUserProfile(profile: Partial<UserProfile> & { uid: stri
     };
 
     if (profile.email !== undefined) cleanData.email = profile.email;
-    if (profile.displayName !== undefined) cleanData.displayName = profile.displayName;
-    if (profile.baseIncome !== undefined) cleanData.baseIncome = profile.baseIncome;
-    if (profile.extraIncome !== undefined) cleanData.extraIncome = profile.extraIncome;
-    if (profile.savingsGoalPercent !== undefined) cleanData.savingsGoalPercent = profile.savingsGoalPercent;
-    if (profile.completedGoals !== undefined) cleanData.completedGoals = profile.completedGoals;
-    if (profile.startOfWeek !== undefined) cleanData.startOfWeek = profile.startOfWeek;
-    if (profile.notificationsEnabled !== undefined) cleanData.notificationsEnabled = profile.notificationsEnabled;
-    if (profile.authEnabled !== undefined) cleanData.authEnabled = profile.authEnabled;
+    if (profile.displayName !== undefined)
+      cleanData.displayName = profile.displayName;
+    if (profile.baseIncome !== undefined)
+      cleanData.baseIncome = profile.baseIncome;
+    if (profile.extraIncome !== undefined)
+      cleanData.extraIncome = profile.extraIncome;
+    if (profile.savingsGoalPercent !== undefined)
+      cleanData.savingsGoalPercent = profile.savingsGoalPercent;
+    if (profile.completedGoals !== undefined)
+      cleanData.completedGoals = profile.completedGoals;
+    if (profile.budgetCategories !== undefined)
+      cleanData.budgetCategories = profile.budgetCategories;
+    if (profile.startOfWeek !== undefined)
+      cleanData.startOfWeek = profile.startOfWeek;
+    if (profile.notificationsEnabled !== undefined)
+      cleanData.notificationsEnabled = profile.notificationsEnabled;
+    if (profile.authEnabled !== undefined)
+      cleanData.authEnabled = profile.authEnabled;
     if (profile.theme !== undefined) cleanData.theme = profile.theme;
 
     await setDoc(ref, cleanData, { merge: true });
@@ -161,7 +177,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
  */
 export function subscribeUserProfile(
   uid: string,
-  onData: (profile: UserProfile | null) => void
+  onData: (profile: UserProfile | null) => void,
 ) {
   if (!uid) {
     onData(null);
@@ -183,13 +199,13 @@ export function subscribeUserProfile(
         console.warn(
           "Firestore Permission Error: Permissões insuficientes para acessar 'users/" +
             uid +
-            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules."
+            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules.",
         );
       } else {
         console.error("Error in subscribeUserProfile:", err);
       }
       onData(null);
-    }
+    },
   );
 }
 
@@ -202,6 +218,27 @@ export async function addExpense(expense: Omit<Expense, "id" | "createdAt">) {
     ...expense,
     createdAt: Timestamp.now(),
   });
+}
+
+/**
+ * Add multiple expense records in batch for a user.
+ */
+export async function addExpensesBatch(
+  expenses: Array<Omit<Expense, "id" | "createdAt">>,
+) {
+  if (expenses.length === 0) return;
+  const batch = writeBatch(db);
+  const expensesRef = collection(db, "expenses");
+
+  for (const exp of expenses) {
+    const newDocRef = doc(expensesRef);
+    batch.set(newDocRef, {
+      ...exp,
+      createdAt: Timestamp.now(),
+    });
+  }
+
+  await batch.commit();
 }
 
 /**
@@ -225,7 +262,7 @@ export async function deleteExpense(id: string) {
  */
 export function subscribeExpenses(
   userId: string,
-  onData: (expenses: Expense[]) => void
+  onData: (expenses: Expense[]) => void,
 ) {
   if (!userId) {
     onData([]);
@@ -235,7 +272,7 @@ export function subscribeExpenses(
   const q = query(
     collection(db, "expenses"),
     where("userId", "==", userId),
-    orderBy("date", "desc")
+    orderBy("date", "desc"),
   );
 
   return onSnapshot(
@@ -252,13 +289,13 @@ export function subscribeExpenses(
         console.warn(
           "Firestore Permission Error: Permissões insuficientes para acessar 'expenses' do usuário '" +
             userId +
-            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules."
+            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules.",
         );
       } else {
         console.error("Error in subscribeExpenses:", err);
       }
       onData([]);
-    }
+    },
   );
 }
 
@@ -266,7 +303,7 @@ export function subscribeExpenses(
  * Add a new investment record for a user.
  */
 export async function addInvestment(
-  investment: Omit<Investment, "id" | "createdAt">
+  investment: Omit<Investment, "id" | "createdAt">,
 ) {
   const ref = collection(db, "investments");
   return await addDoc(ref, {
@@ -280,7 +317,7 @@ export async function addInvestment(
  */
 export async function updateInvestment(
   id: string,
-  investmentData: Partial<Investment>
+  investmentData: Partial<Investment>,
 ) {
   const ref = doc(db, "investments", id);
   await updateDoc(ref, investmentData);
@@ -299,7 +336,7 @@ export async function deleteInvestment(id: string) {
  */
 export function subscribeInvestments(
   userId: string,
-  onData: (investments: Investment[]) => void
+  onData: (investments: Investment[]) => void,
 ) {
   if (!userId) {
     onData([]);
@@ -309,7 +346,7 @@ export function subscribeInvestments(
   const q = query(
     collection(db, "investments"),
     where("userId", "==", userId),
-    orderBy("date", "desc")
+    orderBy("date", "desc"),
   );
 
   return onSnapshot(
@@ -326,13 +363,13 @@ export function subscribeInvestments(
         console.warn(
           "Firestore Permission Error: Permissões insuficientes para acessar 'investments' do usuário '" +
             userId +
-            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules."
+            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules.",
         );
       } else {
         console.error("Error in subscribeInvestments:", err);
       }
       onData([]);
-    }
+    },
   );
 }
 
@@ -354,16 +391,13 @@ export async function addWallet(wallet: Omit<Wallet, "id">) {
 
 export function subscribeWallets(
   userId: string,
-  onData: (wallets: Wallet[]) => void
+  onData: (wallets: Wallet[]) => void,
 ) {
   if (!userId) {
     onData([]);
     return () => {};
   }
-  const q = query(
-    collection(db, "wallets"),
-    where("userId", "==", userId)
-  );
+  const q = query(collection(db, "wallets"), where("userId", "==", userId));
   return onSnapshot(
     q,
     (snapshot) => {
@@ -376,13 +410,13 @@ export function subscribeWallets(
     (err) => {
       if (err.code === "permission-denied") {
         console.warn(
-          "Firestore Permission Error: Permissões insuficientes para acessar 'wallets'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules."
+          "Firestore Permission Error: Permissões insuficientes para acessar 'wallets'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules.",
         );
       } else {
         console.error("Error in subscribeWallets:", err);
       }
       onData([]);
-    }
+    },
   );
 }
 
@@ -410,7 +444,7 @@ export async function addContribution(contribution: Omit<Contribution, "id">) {
 
 export function subscribeContributions(
   userId: string,
-  onData: (contributions: Contribution[]) => void
+  onData: (contributions: Contribution[]) => void,
 ) {
   if (!userId) {
     onData([]);
@@ -418,7 +452,7 @@ export function subscribeContributions(
   }
   const q = query(
     collection(db, "contributions"),
-    where("userId", "==", userId)
+    where("userId", "==", userId),
   );
   return onSnapshot(
     q,
@@ -428,23 +462,24 @@ export function subscribeContributions(
           id: docSnap.id,
           ...(docSnap.data() as Omit<Contribution, "id">),
         }))
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        .sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
       onData(list);
     },
     (err) => {
       if (err.code === "permission-denied") {
         console.warn(
-          "Firestore Permission Error: Permissões insuficientes para acessar 'contributions'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules."
+          "Firestore Permission Error: Permissões insuficientes para acessar 'contributions'. Atualize as Regras de Segurança no Firebase Console ou execute firebase deploy --only firestore:rules.",
         );
       } else {
         console.error("Error in subscribeContributions:", err);
       }
       onData([]);
-    }
+    },
   );
 }
 
 export async function deleteContribution(contributionId: string) {
   return await deleteDoc(doc(db, "contributions", contributionId));
 }
-

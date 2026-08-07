@@ -135,7 +135,7 @@ export default function BudgetPage() {
             className="flex items-center gap-1.5 bg-[#F9D19C] text-[#2C2C2C] px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#f6c382]"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Extra</span>
+            <span>Extra</span>
           </button>
         </div>
       </div>

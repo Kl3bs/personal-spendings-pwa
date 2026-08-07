@@ -5,11 +5,42 @@ import { BudgetCategoryConfig } from "@/lib/firebase/firestore";
 
 describe("BudgetCategoryModal component", () => {
   const mockCategories: BudgetCategoryConfig[] = [
-    { id: "necessities", name: "Necessidades Básicas", percentage: 55, icon: "🏠", color: "#59C7DF" },
-    { id: "investments", name: "Investimentos", percentage: 15, icon: "🎯", color: "#7C3AED", isInvestmentGoal: true },
-    { id: "emergency", name: "Reserva de Emergência", percentage: 10, icon: "🛡️", color: "#F59E0B" },
-    { id: "leisure", name: "Lazer & Estilo de Vida", percentage: 10, icon: "🎉", color: "#EC4899" },
-    { id: "education", name: "Educação & Conhecimento", percentage: 10, icon: "🎓", color: "#8B5CF6" },
+    {
+      id: "necessities",
+      name: "Necessidades Básicas",
+      percentage: 55,
+      icon: "🏠",
+      color: "#59C7DF",
+    },
+    {
+      id: "investments",
+      name: "Investimentos",
+      percentage: 15,
+      icon: "🎯",
+      color: "#7C3AED",
+      isInvestmentGoal: true,
+    },
+    {
+      id: "emergency",
+      name: "Reserva de Emergência",
+      percentage: 10,
+      icon: "🛡️",
+      color: "#F59E0B",
+    },
+    {
+      id: "leisure",
+      name: "Lazer & Estilo de Vida",
+      percentage: 10,
+      icon: "🎉",
+      color: "#EC4899",
+    },
+    {
+      id: "education",
+      name: "Educação & Conhecimento",
+      percentage: 10,
+      icon: "🎓",
+      color: "#8B5CF6",
+    },
   ];
 
   const onSaveMock = vi.fn().mockResolvedValue(undefined);
@@ -25,15 +56,21 @@ describe("BudgetCategoryModal component", () => {
         initialCategories={mockCategories}
         onSave={onSaveMock}
         onClose={onCloseMock}
-      />
+      />,
     );
 
-    expect(screen.getByText("Personalizar Categorias e Orçamento")).toBeInTheDocument();
+    expect(
+      screen.getByText("Personalizar Categorias e Orçamento"),
+    ).toBeInTheDocument();
     expect(screen.getByText(/100%/)).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Necessidades Básicas")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("Necessidades Básicas"),
+    ).toBeInTheDocument();
     expect(screen.getByDisplayValue("55")).toBeInTheDocument();
 
-    const saveButton = screen.getByRole("button", { name: /Salvar Alterações/i });
+    const saveButton = screen.getByRole("button", {
+      name: /Salvar Alterações/i,
+    });
     expect(saveButton).not.toBeDisabled();
   });
 
@@ -43,7 +80,7 @@ describe("BudgetCategoryModal component", () => {
         initialCategories={mockCategories}
         onSave={onSaveMock}
         onClose={onCloseMock}
-      />
+      />,
     );
 
     const input = screen.getByDisplayValue("55");
@@ -53,7 +90,9 @@ describe("BudgetCategoryModal component", () => {
       expect(screen.getByText(/105%/)).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /Salvar Alterações/i });
+    const saveButton = screen.getByRole("button", {
+      name: /Salvar Alterações/i,
+    });
     expect(saveButton).toBeDisabled();
   });
 
@@ -63,7 +102,7 @@ describe("BudgetCategoryModal component", () => {
         initialCategories={mockCategories}
         onSave={onSaveMock}
         onClose={onCloseMock}
-      />
+      />,
     );
 
     // Reduce necessities from 55 to 45
@@ -71,7 +110,9 @@ describe("BudgetCategoryModal component", () => {
     fireEvent.change(inputNecessities, { target: { value: "45" } });
 
     // Add new category button
-    const addButton = screen.getByRole("button", { name: /Adicionar Categoria/i });
+    const addButton = screen.getByRole("button", {
+      name: /Adicionar Categoria/i,
+    });
     fireEvent.click(addButton);
 
     // Enter name for new category
@@ -88,7 +129,9 @@ describe("BudgetCategoryModal component", () => {
       expect(screen.getByText(/100%/)).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /Salvar Alterações/i });
+    const saveButton = screen.getByRole("button", {
+      name: /Salvar Alterações/i,
+    });
     expect(saveButton).not.toBeDisabled();
     fireEvent.click(saveButton);
 

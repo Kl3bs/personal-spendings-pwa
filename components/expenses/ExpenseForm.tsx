@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Expense } from "@/lib/firebase/firestore";
-import { Check, Delete, Calendar, X, Sparkles } from "lucide-react";
+import { Check, Delete, Calendar, X, Sparkles, Pin } from "lucide-react";
 
 interface ExpenseFormProps {
   userId: string;
@@ -14,6 +14,7 @@ export function ExpenseForm({ userId, onSave, onClose }: ExpenseFormProps) {
   const [displayValue, setDisplayValue] = useState("0");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<"essencial" | "importante" | "superfluo">("essencial");
+  const [isMonthlyBill, setIsMonthlyBill] = useState(false);
   const [saving, setSaving] = useState(false);
 
   function handleKeyPress(digit: string) {
@@ -46,6 +47,7 @@ export function ExpenseForm({ userId, onSave, onClose }: ExpenseFormProps) {
         category,
         description: description.trim() || "Gasto sem descrição",
         date: new Date().toISOString().split("T")[0],
+        isMonthlyBill,
       });
       onClose();
     } catch (err) {
@@ -85,6 +87,22 @@ export function ExpenseForm({ userId, onSave, onClose }: ExpenseFormProps) {
             placeholder="Adicionar descrição (ex: Almoço, Uber)..."
             className="w-full text-center text-xs bg-transparent border-b border-[#2C2C2C]/20 py-1 text-[#2C2C2C] placeholder:text-[#2C2C2C]/40 focus:outline-none focus:border-[#2C2C2C]/60"
           />
+
+          {/* Monthly Bill Toggle */}
+          <div className="flex justify-center pt-1">
+            <button
+              type="button"
+              onClick={() => setIsMonthlyBill((prev) => !prev)}
+              className={`py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all border ${
+                isMonthlyBill
+                  ? "bg-[#2C2C2C] text-white border-transparent shadow-xs"
+                  : "bg-white/50 text-[#2C2C2C]/80 border-[#2C2C2C]/20 hover:bg-white/70"
+              }`}
+            >
+              <Pin className={`w-3.5 h-3.5 ${isMonthlyBill ? "fill-white" : ""}`} />
+              <span>Conta do Mês</span>
+            </button>
+          </div>
         </div>
 
         {/* Reflexive Category Selector */}
