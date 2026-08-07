@@ -1,0 +1,4 @@
+# functions dependencies and build output
+node_modules/
+lib/
+*.log

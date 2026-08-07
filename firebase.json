@@ -1,7 +1,9 @@
 {
-  "firestore": {
-    "rules": "firestore.rules"
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs24"
   },
+
   "hosting": {
     "public": "out",
     "cleanUrls": true,
@@ -11,10 +13,6 @@
         "destination": "/index.html"
       }
     ],
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
 }

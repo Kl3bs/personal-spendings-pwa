@@ -3,7 +3,21 @@
 import { useState } from "react";
 import { Expense } from "@/lib/firebase/firestore";
 import { formatCurrency } from "@/lib/budget-engine";
-import { X, Plus, Trash2, Check, Zap, Sparkles, Pin } from "lucide-react";
+import {
+  X,
+  Plus,
+  Trash2,
+  Check,
+  Zap,
+  Sparkles,
+  Pin,
+  FileUp,
+  Loader2,
+} from "lucide-react";
+
+import { uploadBankStatement } from "@/lib/firebase/storage";
+import { functions } from "@/lib/firebase/config";
+import { httpsCallable } from "firebase/functions";
 
 interface BatchExpenseItem {
   id: string;
@@ -47,6 +61,8 @@ export function BatchExpenseModal({
       isMonthlyBill: false,
     },
   ]);
+  const [onlyCurrentMonth, setOnlyCurrentMonth] = useState(true);
+  const [uploadingStatement, setUploadingStatement] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,6 +101,68 @@ export function BatchExpenseModal({
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
     );
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    try {
+      setUploadingStatement(true);
+      setError(null);
+
+      // 1. Upload to Firebase Storage
+      const { storagePath, fileType } = await uploadBankStatement(
+        file,
+        userId || "anonymous",
+      );
+
+      // 2. Call Cloud Function parseBankStatement
+      const parseFn = httpsCallable<
+        { storagePath: string; fileType: string; onlyCurrentMonth: boolean },
+        Array<{
+          description: string;
+          amount: number;
+          date: string;
+          category: "essencial" | "importante" | "superfluo";
+          isMonthlyBill: boolean;
+        }>
+      >(functions, "parseBankStatement");
+
+      const response = await parseFn({
+        storagePath,
+        fileType,
+        onlyCurrentMonth,
+      });
+
+      const parsedData = response.data;
+      if (!parsedData || parsedData.length === 0) {
+        setError("Nenhuma transação foi identificada no arquivo enviado.");
+        return;
+      }
+
+      const newItems: BatchExpenseItem[] = parsedData.map((item, idx) => ({
+        id: `parsed-${Date.now()}-${idx}`,
+        description: item.description,
+        amount: item.amount.toString(),
+        category: item.category || "essencial",
+        date: item.date || todayStr,
+        isMonthlyBill: !!item.isMonthlyBill,
+      }));
+
+      setItems(newItems);
+    } catch (err: any) {
+      console.error("Erro ao importar extrato bancário:", err);
+      setError(
+        err?.message ||
+          "Erro ao importar e processar o extrato. Tente novamente.",
+      );
+    } finally {
+      setUploadingStatement(false);
+      // Reset input value so same file can be re-uploaded if needed
+      e.target.value = "";
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -139,7 +217,8 @@ export function BatchExpenseModal({
                 Cadastro em Lote de Gastos
               </h2>
               <p className="text-xs text-gray-500">
-                Lance várias despesas rapidamente em uma única operação.
+                Lance várias despesas rapidamente ou importe seu extrato
+                bancário.
               </p>
             </div>
           </div>
@@ -151,6 +230,61 @@ export function BatchExpenseModal({
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Bank Statement Upload Banner */}
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#0F766E]/10 text-[#0F766E] flex items-center justify-center shrink-0">
+              <FileUp className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-[#1E293B]">
+                Importar Extrato Bancário
+              </h3>
+              <p className="text-[11px] text-gray-500">
+                Envie seu arquivo (CSV, XLSX ou PDF). O sistema processará via
+                Cloud Function.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 self-end sm:self-center">
+            {/* Filter Current Month Checkbox */}
+            <label className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-700 select-none cursor-pointer bg-white px-2.5 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors shrink-0">
+              <input
+                type="checkbox"
+                aria-label="Apenas mês atual"
+                checked={onlyCurrentMonth}
+                onChange={(e) => setOnlyCurrentMonth(e.target.checked)}
+                className="w-3.5 h-3.5 accent-[#0F766E] rounded cursor-pointer"
+              />
+              <span>Apenas mês atual</span>
+            </label>
+
+            {/* Upload Button Input */}
+            <label className="relative inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0F766E] hover:bg-[#0d6861] text-white text-xs font-bold rounded-xl cursor-pointer transition-colors shadow-xs disabled:opacity-50">
+              {uploadingStatement ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Processando...</span>
+                </>
+              ) : (
+                <>
+                  <FileUp className="w-4 h-4" />
+                  <span>Escolher Arquivo</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept=".csv, .xlsx, .xls, .pdf"
+                data-testid="statement-file-input"
+                onChange={handleFileUpload}
+                disabled={uploadingStatement}
+                className="sr-only"
+              />
+            </label>
+          </div>
         </div>
 
         {/* Total Summary Banner */}
@@ -295,7 +429,7 @@ export function BatchExpenseModal({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || uploadingStatement}
               className="flex-1 py-3 px-4 bg-[#0F766E] text-white font-bold text-xs rounded-xl hover:bg-[#0d6861] transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (

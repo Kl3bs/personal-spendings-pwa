@@ -1,0 +1,26 @@
+{
+  "name": "personal-spendings-functions",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npm run build && firebase serve --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:logs"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.1.0",
+    "firebase-functions": "^6.3.0",
+
+    "papaparse": "^5.5.3",
+    "pdf-parse": "^1.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.16",
+    "@types/pdf-parse": "^1.1.5",
+    "typescript": "^5.0.0"
+  },
+  "private": true
+}
