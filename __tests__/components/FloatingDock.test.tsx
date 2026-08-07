@@ -13,6 +13,7 @@ describe("FloatingDock component", () => {
     expect(screen.getByTitle("Home")).toBeInTheDocument();
     expect(screen.getByTitle("Desafio 30d")).toBeInTheDocument();
     expect(screen.getByTitle("Orçamento")).toBeInTheDocument();
+    expect(screen.getByTitle("Investimentos")).toBeInTheDocument();
     expect(screen.getByTitle("Ajustes")).toBeInTheDocument();
     expect(screen.getByText("Home (Ativo)")).toBeInTheDocument();
   });

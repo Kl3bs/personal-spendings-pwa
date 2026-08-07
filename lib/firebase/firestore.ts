@@ -14,7 +14,22 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
-import { BudgetCategory } from "@/lib/budget-engine";
+export type InvestmentCategory =
+  | "renda_fixa"
+  | "acoes_fiis"
+  | "reserva_emergencia"
+  | "cripto"
+  | "outros";
+
+export interface Investment {
+  id?: string;
+  userId: string;
+  amount: number;
+  category: InvestmentCategory;
+  description: string;
+  date: string; // ISO format string YYYY-MM-DD
+  createdAt?: Timestamp;
+}
 
 export interface Expense {
   id?: string;
@@ -26,15 +41,24 @@ export interface Expense {
   createdAt?: Timestamp;
 }
 
+export interface BudgetCategoryConfig {
+  id: string;
+  name: string;
+  percentage: number;
+  icon?: string;
+  color?: string;
+  isInvestmentGoal?: boolean;
+}
+
 export interface UserProfile {
   uid: string;
-  email?: string;
+  email: string;
   displayName?: string;
   baseIncome: number;
   extraIncome?: number;
-  customCategories?: BudgetCategory[];
   savingsGoalPercent?: number; // e.g. 15 for 15% Pay Yourself First
   completedGoals?: string[]; // IDs of completed checklist goals in Dashboard
+  budgetCategories?: BudgetCategoryConfig[];
   startOfWeek?: string; // e.g. "Sunday" | "Monday"
   notificationsEnabled?: boolean;
   authEnabled?: boolean;
@@ -105,7 +129,6 @@ export async function setUserProfile(profile: Partial<UserProfile> & { uid: stri
     if (profile.displayName !== undefined) cleanData.displayName = profile.displayName;
     if (profile.baseIncome !== undefined) cleanData.baseIncome = profile.baseIncome;
     if (profile.extraIncome !== undefined) cleanData.extraIncome = profile.extraIncome;
-    if (profile.customCategories !== undefined) cleanData.customCategories = profile.customCategories;
     if (profile.savingsGoalPercent !== undefined) cleanData.savingsGoalPercent = profile.savingsGoalPercent;
     if (profile.completedGoals !== undefined) cleanData.completedGoals = profile.completedGoals;
     if (profile.startOfWeek !== undefined) cleanData.startOfWeek = profile.startOfWeek;
@@ -239,6 +262,80 @@ export function subscribeExpenses(
   );
 }
 
+/**
+ * Add a new investment record for a user.
+ */
+export async function addInvestment(
+  investment: Omit<Investment, "id" | "createdAt">
+) {
+  const ref = collection(db, "investments");
+  return await addDoc(ref, {
+    ...investment,
+    createdAt: Timestamp.now(),
+  });
+}
+
+/**
+ * Update an existing investment record.
+ */
+export async function updateInvestment(
+  id: string,
+  investmentData: Partial<Investment>
+) {
+  const ref = doc(db, "investments", id);
+  await updateDoc(ref, investmentData);
+}
+
+/**
+ * Delete an investment record.
+ */
+export async function deleteInvestment(id: string) {
+  const ref = doc(db, "investments", id);
+  await deleteDoc(ref);
+}
+
+/**
+ * Subscribe to real-time investment records filtered by userId.
+ */
+export function subscribeInvestments(
+  userId: string,
+  onData: (investments: Investment[]) => void
+) {
+  if (!userId) {
+    onData([]);
+    return () => {};
+  }
+
+  const q = query(
+    collection(db, "investments"),
+    where("userId", "==", userId),
+    orderBy("date", "desc")
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: Investment[] = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...(docSnap.data() as Omit<Investment, "id">),
+      }));
+      onData(list);
+    },
+    (err) => {
+      if (err.code === "permission-denied") {
+        console.warn(
+          "Firestore Permission Error: Permissões insuficientes para acessar 'investments' do usuário '" +
+            userId +
+            "'. Atualize as Regras de Segurança no Firebase Console ou publique o arquivo firestore.rules."
+        );
+      } else {
+        console.error("Error in subscribeInvestments:", err);
+      }
+      onData([]);
+    }
+  );
+}
+
 // ----------------------------------------------------
 // WALLETS (PATRIMONY) OPERATIONS
 // ----------------------------------------------------
@@ -350,3 +447,4 @@ export function subscribeContributions(
 export async function deleteContribution(contributionId: string) {
   return await deleteDoc(doc(db, "contributions", contributionId));
 }
+

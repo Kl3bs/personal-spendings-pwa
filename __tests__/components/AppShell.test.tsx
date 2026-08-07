@@ -64,6 +64,7 @@ describe("AppShell component", () => {
       expect(screen.getByTestId("protected-content")).toBeInTheDocument();
       expect(screen.getByText("BudgetNest")).toBeInTheDocument();
       expect(screen.getAllByText("Kleber User")[0]).toBeInTheDocument();
+      expect(screen.getByText("Investimentos")).toBeInTheDocument();
     });
   });
 

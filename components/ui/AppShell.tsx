@@ -10,6 +10,7 @@ import {
   Home,
   BarChart2,
   PieChart,
+  PiggyBank,
   Settings,
   Wallet,
   LogOut,
@@ -83,6 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: "/dashboard", icon: Home, label: "Overview" },
+    { href: "/investments", icon: PiggyBank, label: "Investimentos" },
     { href: "/budget", icon: PieChart, label: "Budgets" },
     { href: "/challenge", icon: BarChart2, label: "Goals" },
     { href: "/settings", icon: Settings, label: "Settings" },

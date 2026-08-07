@@ -52,6 +52,10 @@ import {
   updateExpense,
   deleteExpense,
   subscribeExpenses,
+  addInvestment,
+  updateInvestment,
+  deleteInvestment,
+  subscribeInvestments,
   addWallet,
   subscribeWallets,
   deleteWallet,
@@ -248,105 +252,214 @@ describe("firestore integration", () => {
     });
   });
 
+  describe("Investment operations", () => {
+    it("should add a new investment with timestamp", async () => {
+      const invData = {
+        userId: "user-123",
+        amount: 500,
+        category: "renda_fixa" as const,
+        description: "CDB 100% CDI",
+        date: "2026-08-01",
+      };
+      await addInvestment(invData);
+
+      expect(firestore.collection).toHaveBeenCalledWith({}, "investments");
+      expect(firestore.addDoc).toHaveBeenCalledWith("expenses-collection-ref", {
+        ...invData,
+        createdAt: "timestamp-mock",
+      });
+    });
+
+    it("should update an existing investment", async () => {
+      await updateInvestment("inv-123", { amount: 600 });
+      expect(firestore.updateDoc).toHaveBeenCalledWith("doc-ref-investments-inv-123", { amount: 600 });
+    });
+
+    it("should delete an investment", async () => {
+      await deleteInvestment("inv-123");
+      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-investments-inv-123");
+    });
+
+    it("should return empty unsubscribe if userId is missing in subscribeInvestments", () => {
+      const callback = vi.fn();
+      const unsub = subscribeInvestments("", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+      expect(typeof unsub).toBe("function");
+    });
+
+    it("should handle permission-denied in subscribeInvestments", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError({ code: "permission-denied" });
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeInvestments("denied-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+
+    it("should handle generic error in subscribeInvestments", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+        if (typeof onError === "function") {
+          onError(new Error("Query error"));
+        }
+        return vi.fn();
+      });
+
+      const callback = vi.fn();
+      subscribeInvestments("err-user", callback);
+      expect(callback).toHaveBeenCalledWith([]);
+    });
+  });
+
   describe("Wallet operations", () => {
-    it("should add a wallet", async () => {
-      await addWallet({ userId: "u1", name: "Nubank", color: "#10B981" });
+    it("should add a wallet with color", async () => {
+      await addWallet({ userId: "u1", name: "Cripto", color: "#FF9900" });
+      expect(firestore.addDoc).toHaveBeenCalledWith(
+        "expenses-collection-ref",
+        expect.objectContaining({
+          userId: "u1",
+          name: "Cripto",
+          color: "#FF9900",
+        })
+      );
+    });
+
+    it("should add a wallet without color", async () => {
+      await addWallet({ userId: "u1", name: "Reserva" });
       expect(firestore.addDoc).toHaveBeenCalled();
     });
 
-    it("should delete a wallet", async () => {
-      await deleteWallet("w123");
-      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-wallets-w123");
+    it("should subscribe to wallets", () => {
+      const callback = vi.fn();
+      subscribeWallets("u1", callback);
+      expect(callback).toHaveBeenCalled();
     });
 
-    it("should return empty array if userId is empty in subscribeWallets", () => {
+    it("should handle empty userId in subscribeWallets", () => {
       const callback = vi.fn();
       const unsub = subscribeWallets("", callback);
       expect(callback).toHaveBeenCalledWith([]);
       expect(typeof unsub).toBe("function");
     });
 
-    it("should handle subscribeWallets successfully", () => {
-      const callback = vi.fn();
-      subscribeWallets("u1", callback);
-      expect(callback).toHaveBeenCalled();
-    });
-
     it("should handle permission-denied in subscribeWallets", () => {
-      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((q: unknown, onNext: unknown, onError?: unknown) => {
         if (typeof onError === "function") {
           onError({ code: "permission-denied" });
         }
         return vi.fn();
       });
-
       const callback = vi.fn();
-      subscribeWallets("denied-user", callback);
+      subscribeWallets("u1", callback);
       expect(callback).toHaveBeenCalledWith([]);
     });
 
     it("should handle generic error in subscribeWallets", () => {
-      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((q: unknown, onNext: unknown, onError?: unknown) => {
         if (typeof onError === "function") {
-          onError(new Error("Generic error"));
+          onError(new Error("Wallet error"));
         }
         return vi.fn();
       });
-
       const callback = vi.fn();
-      subscribeWallets("err-user", callback);
+      subscribeWallets("u1", callback);
       expect(callback).toHaveBeenCalledWith([]);
+    });
+
+    it("should delete a wallet", async () => {
+      await deleteWallet("w1");
+      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-wallets-w1");
     });
   });
 
   describe("Contribution operations", () => {
-    it("should add a contribution", async () => {
-      await addContribution({ userId: "u1", walletId: "w1", amount: 500, date: "2026-08-01", note: "Aporte inicial" });
+    it("should add a contribution with note", async () => {
+      await addContribution({
+        userId: "u1",
+        walletId: "w1",
+        amount: 500,
+        date: "2026-08-01",
+        note: "Aporte mensal",
+      });
+      expect(firestore.addDoc).toHaveBeenCalledWith(
+        "expenses-collection-ref",
+        expect.objectContaining({
+          userId: "u1",
+          walletId: "w1",
+          amount: 500,
+          note: "Aporte mensal",
+        })
+      );
+    });
+
+    it("should add a contribution without note", async () => {
+      await addContribution({
+        userId: "u1",
+        walletId: "w1",
+        amount: 200,
+        date: "2026-08-02",
+      });
       expect(firestore.addDoc).toHaveBeenCalled();
     });
 
-    it("should delete a contribution", async () => {
-      await deleteContribution("c123");
-      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-contributions-c123");
+    it("should subscribe to contributions and sort them descending", () => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((q: unknown, onNext: unknown) => {
+        if (typeof onNext === "function") {
+          onNext({
+            docs: [
+              { id: "c1", data: () => ({ userId: "u1", walletId: "w1", amount: 100, date: "2026-08-01" }) },
+              { id: "c2", data: () => ({ userId: "u1", walletId: "w1", amount: 200, date: "2026-08-05" }) },
+            ],
+          });
+        }
+        return vi.fn();
+      });
+      const callback = vi.fn();
+      subscribeContributions("u1", callback);
+      expect(callback).toHaveBeenCalledWith([
+        { id: "c2", userId: "u1", walletId: "w1", amount: 200, date: "2026-08-05" },
+        { id: "c1", userId: "u1", walletId: "w1", amount: 100, date: "2026-08-01" },
+      ]);
     });
 
-    it("should return empty array if userId is empty in subscribeContributions", () => {
+    it("should handle empty userId in subscribeContributions", () => {
       const callback = vi.fn();
       const unsub = subscribeContributions("", callback);
       expect(callback).toHaveBeenCalledWith([]);
       expect(typeof unsub).toBe("function");
     });
 
-    it("should handle subscribeContributions successfully", () => {
-      const callback = vi.fn();
-      subscribeContributions("u1", callback);
-      expect(callback).toHaveBeenCalled();
-    });
-
     it("should handle permission-denied in subscribeContributions", () => {
-      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((q: unknown, onNext: unknown, onError?: unknown) => {
         if (typeof onError === "function") {
           onError({ code: "permission-denied" });
         }
         return vi.fn();
       });
-
       const callback = vi.fn();
-      subscribeContributions("denied-user", callback);
+      subscribeContributions("u1", callback);
       expect(callback).toHaveBeenCalledWith([]);
     });
 
     it("should handle generic error in subscribeContributions", () => {
-      vi.mocked(firestore.onSnapshot).mockImplementationOnce((query: unknown, onNext: unknown, onError?: unknown) => {
+      vi.mocked(firestore.onSnapshot).mockImplementationOnce((q: unknown, onNext: unknown, onError?: unknown) => {
         if (typeof onError === "function") {
-          onError(new Error("Generic error"));
+          onError(new Error("Contribution error"));
         }
         return vi.fn();
       });
-
       const callback = vi.fn();
-      subscribeContributions("err-user", callback);
+      subscribeContributions("u1", callback);
       expect(callback).toHaveBeenCalledWith([]);
+    });
+
+    it("should delete a contribution", async () => {
+      await deleteContribution("c1");
+      expect(firestore.deleteDoc).toHaveBeenCalledWith("doc-ref-contributions-c1");
     });
   });
 });
+

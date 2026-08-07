@@ -1,13 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  calculateBudgetAllocation,
-  calculateCustomBudgetAllocation,
-  removeBudgetCategory,
-  getBudgetPercentageStatus,
-  BUDGET_METHODOLOGIES,
-  DEFAULT_BUDGET_CATEGORIES,
-  formatCurrency,
-} from "@/lib/budget-engine";
+import { calculateBudgetAllocation, formatCurrency, calculateBalanceChartData } from "@/lib/budget-engine";
+import { Expense } from "@/lib/firebase/firestore";
 
 describe("budget-engine", () => {
   describe("calculateBudgetAllocation", () => {
@@ -50,6 +43,28 @@ describe("budget-engine", () => {
       expect(result.necessities).toBe(722.4); // 1313.46 * 0.55 = 722.403 -> 722.4
       expect(result.investments).toBe(197.02); // 1313.46 * 0.15 = 197.019 -> 197.02
     });
+
+    it("should calculate allocations based on custom categories if provided", () => {
+      const customCategories = [
+        { id: "cat-1", name: "Moradia", percentage: 50 },
+        { id: "cat-2", name: "Investimentos", percentage: 20, isInvestmentGoal: true },
+        { id: "cat-3", name: "Viagens", percentage: 15 },
+        { id: "cat-4", name: "Lazer", percentage: 15 },
+      ];
+      const result = calculateBudgetAllocation(10000, 0, customCategories);
+      expect(result.totalIncome).toBe(10000);
+      expect(result.categories).toHaveLength(4);
+      expect(result.categories[0]).toEqual({
+        id: "cat-1",
+        name: "Moradia",
+        percentage: 50,
+        amount: 5000,
+        icon: "💰",
+        color: "#6B7280",
+        isInvestmentGoal: false,
+      });
+      expect(result.investments).toBe(2000); // 20% of 10000
+    });
   });
 
   describe("formatCurrency", () => {
@@ -70,91 +85,27 @@ describe("budget-engine", () => {
     });
   });
 
-  describe("calculateCustomBudgetAllocation", () => {
-    it("should calculate allocations for custom categories list", () => {
-      const customCategories = [
-        { id: "cat1", name: "Moradia", percentage: 50 },
-        { id: "cat2", name: "Investimentos", percentage: 20 },
-        { id: "cat3", name: "Assinaturas", percentage: 10 },
+  describe("calculateBalanceChartData", () => {
+    it("should aggregate data by last 6 months when mode is 'months'", () => {
+      const mockExpenses = [
+        { id: "e1", userId: "u1", amount: 1500, category: "essencial", description: "Aluguel", date: "2026-08-01" },
+        { id: "e2", userId: "u1", amount: 500, category: "importante", description: "Mercado", date: "2026-07-15" },
       ];
-      const result = calculateCustomBudgetAllocation(5000, customCategories);
-      expect(result).toHaveLength(3);
-      expect(result[0]).toEqual({ category: customCategories[0], amount: 2500 });
-      expect(result[1]).toEqual({ category: customCategories[1], amount: 1000 });
-      expect(result[2]).toEqual({ category: customCategories[2], amount: 500 });
+      const result = calculateBalanceChartData(mockExpenses as unknown as Expense[], 5000, "months");
+      expect(result).toHaveLength(6);
+      expect(result[5].income).toBe(5000);
+      expect(result[5].expenses).toBe(1500);
     });
 
-    it("should use DEFAULT_BUDGET_CATEGORIES when no categories are passed", () => {
-      const result = calculateCustomBudgetAllocation(1000);
-      expect(result).toHaveLength(DEFAULT_BUDGET_CATEGORIES.length);
-      const necessities = result.find((r) => r.category.id === "necessities");
-      expect(necessities?.amount).toBe(550); // 55% of 1000
-    });
-  });
-
-  describe("removeBudgetCategory", () => {
-    it("should remove category by id from categories list", () => {
-      const categories = [
-        { id: "cat1", name: "Moradia", percentage: 50 },
-        { id: "cat2", name: "Lazer", percentage: 20 },
+    it("should aggregate data by weeks of current month when mode is 'weeks'", () => {
+      const mockExpenses = [
+        { id: "e1", userId: "u1", amount: 300, category: "essencial", description: "Mercado", date: "2026-08-02" },
+        { id: "e2", userId: "u1", amount: 400, category: "importante", description: "Lazer", date: "2026-08-10" },
       ];
-      const updated = removeBudgetCategory(categories, "cat1");
-      expect(updated).toHaveLength(1);
-      expect(updated[0].id).toBe("cat2");
-    });
-  });
-
-  describe("getBudgetPercentageStatus", () => {
-    it("should return complete status when total percentage is 100", () => {
-      const categories = [
-        { id: "cat1", name: "Moradia", percentage: 60 },
-        { id: "cat2", name: "Lazer", percentage: 40 },
-      ];
-      const status = getBudgetPercentageStatus(categories);
-      expect(status.totalPercentage).toBe(100);
-      expect(status.status).toBe("complete");
-    });
-
-    it("should return under status when total percentage is under 100", () => {
-      const categories = [
-        { id: "cat1", name: "Moradia", percentage: 50 },
-        { id: "cat2", name: "Lazer", percentage: 30 },
-      ];
-      const status = getBudgetPercentageStatus(categories);
-      expect(status.totalPercentage).toBe(80);
-      expect(status.status).toBe("under");
-      expect(status.message).toContain("faltam 20%");
-    });
-
-    it("should return over status when total percentage is over 100", () => {
-      const categories = [
-        { id: "cat1", name: "Moradia", percentage: 70 },
-        { id: "cat2", name: "Lazer", percentage: 40 },
-      ];
-      const status = getBudgetPercentageStatus(categories);
-      expect(status.totalPercentage).toBe(110);
-      expect(status.status).toBe("over");
-      expect(status.message).toContain("10% acima");
-    });
-
-    it("should handle category without percentage gracefully", () => {
-      const categories = [
-        { id: "cat1", name: "Moradia", percentage: 50 },
-        { id: "cat2", name: "Sem percentual", percentage: (undefined as unknown as number) },
-      ];
-      const status = getBudgetPercentageStatus(categories);
-      expect(status.totalPercentage).toBe(50);
-    });
-  });
-
-  describe("BUDGET_METHODOLOGIES", () => {
-    it("should provide predefined methodologies like 50/30/20 and Pay Yourself First", () => {
-      expect(BUDGET_METHODOLOGIES.length).toBeGreaterThanOrEqual(2);
-      const rule503020 = BUDGET_METHODOLOGIES.find((m) => m.id === "rule503020");
-      expect(rule503020).toBeDefined();
-      const totalPct = rule503020?.categories.reduce((s, c) => s + c.percentage, 0);
-      expect(totalPct).toBe(100);
+      const result = calculateBalanceChartData(mockExpenses as unknown as Expense[], 4000, "weeks");
+      expect(result).toHaveLength(4); // Week 1 to 4
+      expect(result[0].income).toBe(1000); // 4000 / 4
+      expect(result[0].expenses).toBe(300);
     });
   });
 });
-

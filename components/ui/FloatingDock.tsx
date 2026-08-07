@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BarChart2, PieChart, Wallet as WalletIcon, Settings } from "lucide-react";
+import { Home, BarChart2, PieChart, PiggyBank, Settings } from "lucide-react";
 
 export function FloatingDock() {
   const pathname = usePathname();
@@ -11,7 +11,7 @@ export function FloatingDock() {
     { href: "/dashboard", icon: Home, label: "Home" },
     { href: "/challenge", icon: BarChart2, label: "Desafio 30d" },
     { href: "/budget", icon: PieChart, label: "Orçamento" },
-    { href: "/patrimony", icon: WalletIcon, label: "Patrimônio" },
+    { href: "/investments", icon: PiggyBank, label: "Investimentos" },
     { href: "/settings", icon: Settings, label: "Ajustes" },
   ];
 
