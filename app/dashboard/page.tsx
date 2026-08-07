@@ -133,7 +133,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/challenge"
-            className="py-2.5 px-4 bg-[#F9D19C] text-[#2C2C2C] font-semibold text-xs rounded-xl hover:bg-[#f5c37e] shadow-xs flex items-center gap-1.5 transition-all"
+            className="py-2.5 px-4 bg-[#F9D19C] dark:bg-amber-400 text-[#2C2C2C] dark:text-[#121318] font-bold text-xs rounded-xl hover:bg-[#f5c37e] dark:hover:bg-amber-300 shadow-xs dark:shadow-amber-400/20 flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Gasto (30d)</span>
@@ -600,12 +600,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Goals Checklist Card (Figma desktop_1.png) */}
-          <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-[#1A1C24] rounded-3xl border border-gray-100 dark:border-[#2B2E3C] p-5 shadow-xs space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-gray-800">
+              <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">
                 Checklist de Metas
               </h3>
-              <span className="text-[10px] font-semibold text-gray-400">
+              <span className="text-[10px] font-bold text-gray-500 dark:text-teal-300 bg-gray-100 dark:bg-teal-950/60 dark:border dark:border-teal-800/40 px-2.5 py-0.5 rounded-full">
                 {completedGoals.length}/3 Concluídas
               </span>
             </div>
@@ -614,20 +614,20 @@ export default function DashboardPage() {
               {/* Goal 1 */}
               <button
                 onClick={() => toggleGoal("goal-1")}
-                className="w-full text-left flex items-start gap-3 p-3 bg-gray-50/70 hover:bg-gray-100/60 transition-colors rounded-2xl cursor-pointer"
+                className="w-full text-left flex items-start gap-3 p-3.5 bg-gray-50/70 dark:bg-[#20232D] hover:bg-gray-100/60 dark:hover:bg-[#282C38] border border-transparent dark:border-[#2E3242] transition-colors rounded-2xl cursor-pointer group"
               >
                 {completedGoals.includes("goal-1") ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-500 group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors" />
                 )}
                 <div>
                   <div
-                    className={`text-xs font-bold ${completedGoals.includes("goal-1") ? "line-through text-gray-400" : "text-gray-800"}`}
+                    className={`text-xs font-bold ${completedGoals.includes("goal-1") ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-100"}`}
                   >
                     Investimento Liberdade (15%)
                   </div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">
                     Separar R$ {allocation.investments} no dia do pagamento
                   </div>
                 </div>
@@ -636,20 +636,20 @@ export default function DashboardPage() {
               {/* Goal 2 */}
               <button
                 onClick={() => toggleGoal("goal-2")}
-                className="w-full text-left flex items-start gap-3 p-3 bg-gray-50/70 hover:bg-gray-100/60 transition-colors rounded-2xl cursor-pointer"
+                className="w-full text-left flex items-start gap-3 p-3.5 bg-gray-50/70 dark:bg-[#20232D] hover:bg-gray-100/60 dark:hover:bg-[#282C38] border border-transparent dark:border-[#2E3242] transition-colors rounded-2xl cursor-pointer group"
               >
                 {completedGoals.includes("goal-2") ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-500 group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors" />
                 )}
                 <div>
                   <div
-                    className={`text-xs font-bold ${completedGoals.includes("goal-2") ? "line-through text-gray-400" : "text-gray-800"}`}
+                    className={`text-xs font-bold ${completedGoals.includes("goal-2") ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-100"}`}
                   >
                     Desafio dos 30 Dias
                   </div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">
                     Registrar gastos com tag reflexiva (Essencial / Importante /
                     Supérfluo)
                   </div>
@@ -659,20 +659,20 @@ export default function DashboardPage() {
               {/* Goal 3 */}
               <button
                 onClick={() => toggleGoal("goal-3")}
-                className="w-full text-left flex items-start gap-3 p-3 bg-gray-50/70 hover:bg-gray-100/60 transition-colors rounded-2xl cursor-pointer"
+                className="w-full text-left flex items-start gap-3 p-3.5 bg-gray-50/70 dark:bg-[#20232D] hover:bg-gray-100/60 dark:hover:bg-[#282C38] border border-transparent dark:border-[#2E3242] transition-colors rounded-2xl cursor-pointer group"
               >
                 {completedGoals.includes("goal-3") ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-500 group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors" />
                 )}
                 <div>
                   <div
-                    className={`text-xs font-bold ${completedGoals.includes("goal-3") ? "line-through text-gray-400" : "text-gray-800"}`}
+                    className={`text-xs font-bold ${completedGoals.includes("goal-3") ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-100"}`}
                   >
                     Teto de Gastos Essenciais (55%)
                   </div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">
                     Manter essenciais em até{" "}
                     {formatCurrency(allocation.necessities)}
                   </div>
