@@ -24,7 +24,8 @@ export function BudgetCategoryModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const totalPercentage = categories.reduce((sum, cat) => sum + (Number(cat.percentage) || 0), 0);
+  const rawTotal = categories.reduce((sum, cat) => sum + (Number(cat.percentage) || 0), 0);
+  const totalPercentage = Number(rawTotal.toFixed(2));
   const isValidTotal = totalPercentage === 100;
 
   function handleAddCategory() {

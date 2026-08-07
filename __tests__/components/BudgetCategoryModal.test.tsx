@@ -96,4 +96,22 @@ describe("BudgetCategoryModal component", () => {
       expect(onSaveMock).toHaveBeenCalled();
     });
   });
+
+  it("handles decimal percentages cleanly without float precision issues", () => {
+    const decimalCategories: BudgetCategoryConfig[] = [
+      { id: "c1", name: "Cat 1", percentage: 33.33 },
+      { id: "c2", name: "Cat 2", percentage: 33.33 },
+      { id: "c3", name: "Cat 3", percentage: 33.34 },
+    ];
+    render(
+      <BudgetCategoryModal
+        initialCategories={decimalCategories}
+        onSave={onSaveMock}
+        onClose={onCloseMock}
+      />
+    );
+
+    const saveButton = screen.getByRole("button", { name: /Salvar Alterações/i });
+    expect(saveButton).not.toBeDisabled();
+  });
 });

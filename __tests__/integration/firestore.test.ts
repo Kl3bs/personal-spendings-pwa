@@ -126,6 +126,19 @@ describe("firestore integration", () => {
       );
     });
 
+    it("should save budgetCategories via setUserProfile", async () => {
+      const budgetCategories = [
+        { id: "cat-1", name: "Moradia", percentage: 50 },
+        { id: "cat-2", name: "Investimentos", percentage: 50 },
+      ];
+      await setUserProfile({ uid: "user-1", budgetCategories });
+      expect(firestore.setDoc).toHaveBeenCalledWith(
+        "doc-ref-users-user-1",
+        expect.objectContaining({ budgetCategories }),
+        { merge: true }
+      );
+    });
+
     it("should subscribe to user profile changes", () => {
       const callback = vi.fn();
       const unsubscribe = subscribeUserProfile("user-1", callback);

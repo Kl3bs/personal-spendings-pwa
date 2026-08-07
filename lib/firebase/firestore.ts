@@ -131,6 +131,7 @@ export async function setUserProfile(profile: Partial<UserProfile> & { uid: stri
     if (profile.extraIncome !== undefined) cleanData.extraIncome = profile.extraIncome;
     if (profile.savingsGoalPercent !== undefined) cleanData.savingsGoalPercent = profile.savingsGoalPercent;
     if (profile.completedGoals !== undefined) cleanData.completedGoals = profile.completedGoals;
+    if (profile.budgetCategories !== undefined) cleanData.budgetCategories = profile.budgetCategories;
     if (profile.startOfWeek !== undefined) cleanData.startOfWeek = profile.startOfWeek;
     if (profile.notificationsEnabled !== undefined) cleanData.notificationsEnabled = profile.notificationsEnabled;
     if (profile.authEnabled !== undefined) cleanData.authEnabled = profile.authEnabled;
