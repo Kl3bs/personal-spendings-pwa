@@ -42,6 +42,7 @@ export function Sidebar() {
     { href: "/dashboard", icon: Home, label: "Home" },
     { href: "/challenge", icon: BarChart2, label: "Desafio 30 Dias" },
     { href: "/budget", icon: PieChart, label: "Orçamento & Metas" },
+    { href: "/patrimony", icon: Wallet, label: "Patrimônio" },
     { href: "/settings", icon: Settings, label: "Configurações" },
   ];
 
