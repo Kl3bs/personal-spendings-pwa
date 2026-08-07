@@ -11,6 +11,7 @@ import {
   where,
   orderBy,
   Timestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./config";
 
@@ -216,6 +217,27 @@ export async function addExpense(expense: Omit<Expense, "id" | "createdAt">) {
     ...expense,
     createdAt: Timestamp.now(),
   });
+}
+
+/**
+ * Add multiple expense records in batch for a user.
+ */
+export async function addExpensesBatch(
+  expenses: Array<Omit<Expense, "id" | "createdAt">>,
+) {
+  if (expenses.length === 0) return;
+  const batch = writeBatch(db);
+  const expensesRef = collection(db, "expenses");
+
+  for (const exp of expenses) {
+    const newDocRef = doc(expensesRef);
+    batch.set(newDocRef, {
+      ...exp,
+      createdAt: Timestamp.now(),
+    });
+  }
+
+  await batch.commit();
 }
 
 /**

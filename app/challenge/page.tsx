@@ -7,11 +7,12 @@ import {
   Expense,
   subscribeExpenses,
   addExpense,
+  addExpensesBatch,
   deleteExpense,
 } from "@/lib/firebase/firestore";
 import { formatCurrency } from "@/lib/budget-engine";
 import { FloatingDock } from "@/components/ui/FloatingDock";
-import { Plus, Trash2, Calendar, Award, Sparkles } from "lucide-react";
+import { Plus, Trash2, Calendar, Award, Sparkles, Zap } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const ExpenseForm = dynamic(
@@ -19,10 +20,16 @@ const ExpenseForm = dynamic(
   { ssr: false }
 );
 
+const BatchExpenseModal = dynamic(
+  () => import("@/components/expenses/BatchExpenseModal").then((mod) => mod.BatchExpenseModal),
+  { ssr: false }
+);
+
 export default function ChallengePage() {
   const [user, setUser] = useState<User | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isBatchOpen, setIsBatchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,9 +71,18 @@ export default function ChallengePage() {
           <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">Desafio 30 Dias</h1>
           <p className="text-xs text-[#2C2C2C]/60">Classifique seus gastos com consciência</p>
         </div>
-        <div className="flex items-center gap-1.5 bg-[#F9D19C]/30 px-3 py-1.5 rounded-2xl text-xs font-semibold text-[#2C2C2C]">
-          <Award className="w-4 h-4 text-[#2C2C2C]" />
-          <span>{daysCompleted}/30 Dias</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsBatchOpen(true)}
+            className="flex items-center gap-1.5 bg-[#0F766E] text-white px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#0d6861] transition-all"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>Em Lote</span>
+          </button>
+          <div className="flex items-center gap-1.5 bg-[#F9D19C]/30 px-3 py-1.5 rounded-2xl text-xs font-semibold text-[#2C2C2C]">
+            <Award className="w-4 h-4 text-[#2C2C2C]" />
+            <span>{daysCompleted}/30 Dias</span>
+          </div>
         </div>
       </div>
 
@@ -218,6 +234,17 @@ export default function ChallengePage() {
             if (user) await addExpense(newExp);
           }}
           onClose={() => setIsFormOpen(false)}
+        />
+      )}
+
+      {/* Batch Expense Modal */}
+      {isBatchOpen && (
+        <BatchExpenseModal
+          userId={user?.uid || "guest"}
+          onSaveBatch={async (expensesList) => {
+            if (user) await addExpensesBatch(expensesList);
+          }}
+          onClose={() => setIsBatchOpen(false)}
         />
       )}
 

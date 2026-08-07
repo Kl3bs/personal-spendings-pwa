@@ -35,6 +35,10 @@ vi.mock("firebase/firestore", () => {
     Timestamp: {
       now: vi.fn(() => "timestamp-mock"),
     },
+    writeBatch: vi.fn(() => ({
+      set: vi.fn(),
+      commit: vi.fn().mockResolvedValue(undefined),
+    })),
   };
 });
 
@@ -49,6 +53,7 @@ import {
   getUserProfile,
   subscribeUserProfile,
   addExpense,
+  addExpensesBatch,
   updateExpense,
   deleteExpense,
   subscribeExpenses,
@@ -253,6 +258,28 @@ describe("firestore integration", () => {
         }),
       );
       expect(res.id).toBe("new-expense-id");
+    });
+
+    it("should add multiple expenses in batch via writeBatch", async () => {
+      const expenses = [
+        {
+          userId: "user-1",
+          amount: 50,
+          category: "essencial" as const,
+          description: "Almoço",
+          date: "2026-08-05",
+        },
+        {
+          userId: "user-1",
+          amount: 120,
+          category: "superfluo" as const,
+          description: "Cinema",
+          date: "2026-08-05",
+        },
+      ];
+
+      await addExpensesBatch(expenses);
+      expect(firestore.writeBatch).toHaveBeenCalled();
     });
 
     it("should update an existing expense", async () => {

@@ -66,7 +66,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-[#FFFCF8] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-[#F9D19C] border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-semibold text-[#2C2C2C]/60">Carregando...</span>
+          <span className="text-xs font-semibold text-[#2C2C2C]/60">
+            Carregando...
+          </span>
         </div>
       </div>
     );
@@ -87,7 +89,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: "/investments", icon: PiggyBank, label: "Investimentos" },
     { href: "/budget", icon: PieChart, label: "Budgets" },
     { href: "/challenge", icon: BarChart2, label: "Goals" },
-    { href: "/settings", icon: Settings, label: "Settings" },
   ];
 
   return (
@@ -209,7 +210,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           {/* Sidebar Footer Info */}
           <div className="p-3 bg-[#FFFCF8] rounded-xl border border-gray-100 text-[10px] text-gray-500 text-center">
-            <span className="font-semibold text-gray-700">Gastos Conscientes</span>
+            <span className="font-semibold text-gray-700">
+              Gastos Conscientes
+            </span>
             <br />
             Método Pay Yourself First
           </div>
