@@ -150,7 +150,9 @@ export default function DashboardPage() {
               <TrendingUp className="w-3.5 h-3.5" /> +20%
             </span>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">Saldo Atual</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Saldo Atual
+          </div>
           <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#1E293B] dark:text-gray-100 tracking-tight truncate">
             {formatCurrency(currentBalance)}
           </div>
@@ -163,7 +165,9 @@ export default function DashboardPage() {
               <TrendingUp className="w-3.5 h-3.5" /> +19%
             </span>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">Renda Total</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Renda Total
+          </div>
           <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#1E293B] dark:text-gray-100 tracking-tight truncate">
             {formatCurrency(allocation.totalIncome)}
           </div>
@@ -182,7 +186,9 @@ export default function DashboardPage() {
               Ver mais →
             </span>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">Investimento Realizado</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Investimento Realizado
+          </div>
           <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#0F766E] dark:text-teal-400 tracking-tight truncate">
             {formatCurrency(investmentStats.totalInvested)}
           </div>
@@ -198,13 +204,17 @@ export default function DashboardPage() {
               <TrendingDown className="w-3.5 h-3.5" /> Gastos Total
             </span>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">Despesas do Mês</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Despesas do Mês
+          </div>
           <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-rose-600 dark:text-rose-400 tracking-tight truncate">
             {formatCurrency(totalExpenses)}
           </div>
           <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1 truncate">
             <Pin className="w-3 h-3 text-[#0F766E] dark:text-teal-400 shrink-0" />
-            <span className="truncate">Contas do Mês: {formatCurrency(totalMonthlyBills)}</span>
+            <span className="truncate">
+              Contas do Mês: {formatCurrency(totalMonthlyBills)}
+            </span>
           </div>
         </div>
       </div>
@@ -520,7 +530,10 @@ export default function DashboardPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-[#2B2E3C]">
                       {displayedExpenses.slice(0, 6).map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50/50 dark:hover:bg-[#232631]">
+                        <tr
+                          key={item.id}
+                          className="hover:bg-gray-50/50 dark:hover:bg-[#232631]"
+                        >
                           <td className="py-3 text-gray-500 dark:text-gray-400 font-medium">
                             {new Date(item.date).toLocaleDateString("pt-BR")}
                           </td>

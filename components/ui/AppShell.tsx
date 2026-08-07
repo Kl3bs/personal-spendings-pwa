@@ -52,7 +52,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const storedLocal = localStorage.getItem("theme-preference");
       if (p?.theme && !storedLocal) {
         const themeVal = p.theme.toLowerCase();
-        if (themeVal === "light" || themeVal === "dark" || themeVal === "system") {
+        if (
+          themeVal === "light" ||
+          themeVal === "dark" ||
+          themeVal === "system"
+        ) {
           setTheme(themeVal as "light" | "dark" | "system");
         }
       }
