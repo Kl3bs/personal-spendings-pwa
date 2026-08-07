@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins, Inter } from "next/font/google";
 import { AppShell } from "@/components/ui/AppShell";
+import { ThemeProvider } from "@/lib/theme-provider";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -48,9 +49,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${poppins.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#F8F9FA] text-[#2C2C2C] font-sans selection:bg-[#F9D19C]">
-        <AppShell>{children}</AppShell>
+      <body className="min-h-full flex flex-col bg-[#F8F9FA] dark:bg-[#0F172A] text-[#2C2C2C] dark:text-[#F8FAFC] font-sans selection:bg-[#F9D19C] transition-colors duration-200">
+        <ThemeProvider>
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+

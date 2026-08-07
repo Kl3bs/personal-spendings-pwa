@@ -14,6 +14,16 @@
   --superfluous: #FDB557;
 }
 
+.dark {
+  --background: #0F172A;
+  --foreground: #F8FAFC;
+  --accent: #F9D19C;
+  --surface: #1E293B;
+  --dock-bg: #1E293B;
+  --text-muted: rgba(255, 255, 255, 0.6);
+}
+
+
 @theme {
   --color-bg-warm: #FFFCF8;
   --color-accent-sand: #F9D19C;
