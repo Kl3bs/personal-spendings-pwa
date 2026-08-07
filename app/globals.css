@@ -45,6 +45,53 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+/* Fallback automático para modo escuro garantindo que nenhum card permaneça branco */
+.dark body {
+  background-color: #121318 !important;
+  color: #F3F4F6 !important;
+}
+
+.dark .bg-white {
+  background-color: #1A1C24 !important;
+  color: #F3F4F6;
+}
+
+.dark .bg-\[\#FFFCF8\] {
+  background-color: #121318 !important;
+  color: #F3F4F6;
+}
+
+.dark .bg-[#F8F9FA] {
+  background-color: #121318 !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: #232631 !important;
+  color: #F3F4F6;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #2B2E3C !important;
+}
+
+.dark .text-\[\#1E293B\],
+.dark .text-\[\#2C2C2C\] {
+  color: #F3F4F6 !important;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  color: #E2E8F0 !important;
+}
+
+.dark .text-gray-400,
+.dark .text-gray-500,
+.dark .text-gray-600 {
+  color: #9CA3AF !important;
+}
+
 /* Ocultar setas clicáveis de incremento/decrecimento em inputs numéricos */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
