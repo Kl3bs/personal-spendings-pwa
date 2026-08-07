@@ -335,15 +335,13 @@ export default function DashboardPage() {
                     viewBox="0 0 100 100"
                   >
                     {(() => {
-                      let cumulativePercentage = 0;
                       const circumference = 2 * Math.PI * 38; // ~238.76
-                      return allocation.categories.map((cat) => {
+                      return allocation.categories.map((cat, idx, arr) => {
+                        const acc = arr
+                          .slice(0, idx)
+                          .reduce((sum, item) => sum + item.percentage, 0);
                         const strokeDasharray = `${(cat.percentage / 100) * circumference} ${circumference}`;
-                        const strokeDashoffset = -(
-                          (cumulativePercentage / 100) *
-                          circumference
-                        );
-                        cumulativePercentage += cat.percentage;
+                        const strokeDashoffset = -((acc / 100) * circumference);
                         return (
                           <circle
                             key={cat.id}

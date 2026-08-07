@@ -22,9 +22,6 @@ import { InvestmentForm } from "@/components/investments/InvestmentForm";
 import { BudgetCategoryModal } from "@/components/budget/BudgetCategoryModal";
 import {
   Sparkles,
-  ShieldCheck,
-  HeartHandshake,
-  GraduationCap,
   Plus,
   RotateCcw,
   CheckCircle2,
