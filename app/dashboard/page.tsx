@@ -468,38 +468,38 @@ export default function DashboardPage() {
                   {displayedExpenses.slice(0, 6).map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 bg-gray-50/80 rounded-2xl border border-gray-100/80 space-y-1.5"
+                      className="p-3 bg-gray-50/80 dark:bg-[#232631] rounded-2xl border border-gray-100/80 dark:border-[#323646] space-y-1.5"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                               item.category === "essencial"
-                                ? "bg-amber-100 text-amber-800"
+                                ? "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 dark:border dark:border-amber-700/50"
                                 : item.category === "importante"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-rose-100 text-rose-800"
+                                  ? "bg-blue-100 text-blue-800 dark:bg-sky-950/80 dark:text-sky-300 dark:border dark:border-sky-700/50"
+                                  : "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 dark:border dark:border-rose-700/50"
                             }`}
                           >
                             {item.category.toUpperCase()}
                           </span>
                           {item.isMonthlyBill && (
-                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
+                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] dark:bg-teal-950/80 dark:text-teal-300 border border-[#0F766E]/20 dark:border-teal-700/50">
                               <Pin className="w-2.5 h-2.5 fill-current" />
                               Conta do Mês
                             </span>
                           )}
                         </div>
-                        <span className="text-[10px] text-gray-400 font-medium shrink-0">
+                        <span className="text-[10px] text-gray-400 dark:text-gray-400 font-medium shrink-0">
                           {new Date(item.date).toLocaleDateString("pt-BR")}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between gap-2 pt-0.5">
-                        <span className="text-xs font-bold text-gray-800 truncate">
+                        <span className="text-xs font-bold text-gray-800 dark:text-gray-100 truncate">
                           {item.description}
                         </span>
-                        <span className="text-xs font-extrabold text-rose-600 shrink-0">
+                        <span className="text-xs font-extrabold text-rose-600 dark:text-rose-400 shrink-0">
                           -{formatCurrency(item.amount)}
                         </span>
                       </div>
@@ -511,23 +511,23 @@ export default function DashboardPage() {
                 <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-gray-100 text-gray-400 font-semibold">
+                      <tr className="border-b border-gray-100 dark:border-[#2B2E3C] text-gray-400 dark:text-gray-400 font-semibold">
                         <th className="pb-3">Data</th>
                         <th className="pb-3">Descrição</th>
                         <th className="pb-3">Categoria</th>
                         <th className="pb-3 text-right">Valor</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-gray-50 dark:divide-[#2B2E3C]">
                       {displayedExpenses.slice(0, 6).map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50/50">
-                          <td className="py-3 text-gray-500 font-medium">
+                        <tr key={item.id} className="hover:bg-gray-50/50 dark:hover:bg-[#232631]">
+                          <td className="py-3 text-gray-500 dark:text-gray-400 font-medium">
                             {new Date(item.date).toLocaleDateString("pt-BR")}
                           </td>
-                          <td className="py-3 font-semibold text-gray-800 flex items-center gap-1.5">
+                          <td className="py-3 font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
                             <span>{item.description}</span>
                             {item.isMonthlyBill && (
-                              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
+                              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] dark:bg-teal-950/80 dark:text-teal-300 border border-[#0F766E]/20 dark:border-teal-700/50">
                                 <Pin className="w-2.5 h-2.5 fill-current" />
                                 Conta do Mês
                               </span>
@@ -537,16 +537,16 @@ export default function DashboardPage() {
                             <span
                               className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                                 item.category === "essencial"
-                                  ? "bg-amber-50 text-amber-700"
+                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 dark:border dark:border-amber-700/50"
                                   : item.category === "importante"
-                                    ? "bg-blue-50 text-blue-700"
-                                    : "bg-rose-50 text-rose-700"
+                                    ? "bg-blue-50 text-blue-700 dark:bg-sky-950/80 dark:text-sky-300 dark:border dark:border-sky-700/50"
+                                    : "bg-rose-50 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 dark:border dark:border-rose-700/50"
                               }`}
                             >
                               {item.category.toUpperCase()}
                             </span>
                           </td>
-                          <td className="py-3 text-right font-bold text-rose-600">
+                          <td className="py-3 text-right font-bold text-rose-600 dark:text-rose-400">
                             -{formatCurrency(item.amount)}
                           </td>
                         </tr>

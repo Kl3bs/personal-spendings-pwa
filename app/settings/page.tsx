@@ -134,7 +134,7 @@ export default function SettingsPage() {
   const baseIncome = profile?.baseIncome || 3500;
 
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-6 pb-28 bg-[#FFFCF8] dark:bg-[#0F172A] text-[#2C2C2C] dark:text-[#F8FAFC] transition-colors duration-200">
+    <div className="flex flex-col min-h-screen px-4 pt-6 pb-28 bg-[#FFFCF8] dark:bg-[#121318] text-[#2C2C2C] dark:text-[#F3F4F6] transition-colors duration-200">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function SettingsPage() {
           <h1 className="text-xl font-bold font-heading text-[#2C2C2C] dark:text-white">Configurações</h1>
         </div>
         <button
-          className="relative p-2.5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xs text-[#2C2C2C] dark:text-slate-200"
+          className="relative p-2.5 bg-white dark:bg-[#1A1C24] rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs text-[#2C2C2C] dark:text-gray-200"
           title="Notificações"
         >
           <Bell className="w-5 h-5" />
@@ -153,9 +153,9 @@ export default function SettingsPage() {
 
       <div className="space-y-6">
         {/* PROFILE CARD */}
-        <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-gray-100 dark:border-slate-800 p-5 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-[#1A1C24] rounded-3xl border border-gray-100 dark:border-[#2B2E3C] p-5 shadow-xs space-y-4">
           <div className="flex justify-between items-center">
-            <div className="text-[11px] font-bold tracking-wider text-[#2C2C2C]/50 dark:text-slate-400 uppercase">
+            <div className="text-[11px] font-bold tracking-wider text-[#2C2C2C]/50 dark:text-gray-400 uppercase">
               Perfil do Usuário
             </div>
             {!isEditingProfile && (
@@ -176,7 +176,7 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-0.5 overflow-hidden">
                 <h3 className="text-sm font-bold text-[#2C2C2C] dark:text-white truncate">{userName}</h3>
-                <p className="text-xs text-[#2C2C2C]/50 dark:text-slate-400 truncate">{user?.email}</p>
+                <p className="text-xs text-[#2C2C2C]/50 dark:text-gray-400 truncate">{user?.email}</p>
                 <div className="text-xs font-semibold text-[#10B981] dark:text-emerald-400 pt-1">
                   Renda Base: <span className="font-extrabold">{formatCurrency(baseIncome)}</span>
                 </div>
@@ -185,29 +185,29 @@ export default function SettingsPage() {
           ) : (
             <div className="space-y-3 pt-1">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-700 dark:text-slate-300">Nome de Exibição</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Nome de Exibição</label>
                 <div className="relative">
-                  <UserIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
+                  <UserIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                   <input
                     type="text"
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
                     placeholder="Seu nome"
-                    className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-gray-800 dark:text-slate-200 focus:outline-none focus:border-[#F9D19C]"
+                    className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-[#232631] border border-gray-200 dark:border-[#323646] rounded-xl text-xs font-semibold text-gray-800 dark:text-gray-100 focus:outline-none focus:border-[#F9D19C]"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-700 dark:text-slate-300">Renda Base Mensal (R$)</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Renda Base Mensal (R$)</label>
                 <div className="relative">
-                  <DollarSign className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
+                  <DollarSign className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                   <input
                     type="number"
                     value={incomeInput}
                     onChange={(e) => setIncomeInput(e.target.value)}
                     placeholder="3500"
-                    className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-gray-800 dark:text-slate-200 focus:outline-none focus:border-[#F9D19C]"
+                    className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-[#232631] border border-gray-200 dark:border-[#323646] rounded-xl text-xs font-semibold text-gray-800 dark:text-gray-100 focus:outline-none focus:border-[#F9D19C]"
                   />
                 </div>
               </div>
@@ -216,7 +216,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setIsEditingProfile(false)}
-                  className="flex-1 py-2 text-xs font-semibold text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 rounded-xl flex items-center justify-center gap-1"
+                  className="flex-1 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#232631] rounded-xl flex items-center justify-center gap-1"
                 >
                   <X className="w-4 h-4" />
                   <span>Cancelar</span>
@@ -237,13 +237,13 @@ export default function SettingsPage() {
 
         {/* GENERAL Section */}
         <div className="space-y-2">
-          <div className="text-[11px] font-bold tracking-wider text-[#2C2C2C]/50 dark:text-slate-400 px-1 uppercase">
+          <div className="text-[11px] font-bold tracking-wider text-[#2C2C2C]/50 dark:text-gray-400 px-1 uppercase">
             Geral
           </div>
-          <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-gray-100 dark:border-slate-800 divide-y divide-gray-50 dark:divide-slate-800 overflow-hidden shadow-xs">
+          <div className="bg-white dark:bg-[#1A1C24] rounded-3xl border border-gray-100 dark:border-[#2B2E3C] divide-y divide-gray-50 dark:divide-[#2B2E3C] overflow-hidden shadow-xs">
             <button
               onClick={handleCycleTheme}
-              className="w-full p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50 text-left cursor-pointer"
+              className="w-full p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-[#232631]/50 text-left cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-[#59C7DF]/20 text-[#0284C7] dark:text-cyan-400 rounded-xl">
@@ -251,7 +251,7 @@ export default function SettingsPage() {
                 </div>
                 <span className="text-xs font-semibold text-[#2C2C2C] dark:text-white">Aparência</span>
               </div>
-              <div className="flex items-center gap-1 text-xs text-[#2C2C2C]/50 dark:text-slate-400">
+              <div className="flex items-center gap-1 text-xs text-[#2C2C2C]/50 dark:text-gray-400">
                 <span>{theme}</span>
                 <ChevronRight className="w-4 h-4" />
               </div>
@@ -259,7 +259,7 @@ export default function SettingsPage() {
 
             <button
               onClick={handleCycleStartOfWeek}
-              className="w-full p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50 text-left cursor-pointer"
+              className="w-full p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-[#232631]/50 text-left cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-[#FDB557]/20 text-[#D97706] dark:text-amber-400 rounded-xl">
@@ -267,13 +267,13 @@ export default function SettingsPage() {
                 </div>
                 <span className="text-xs font-semibold text-[#2C2C2C] dark:text-white">Início da Semana</span>
               </div>
-              <div className="flex items-center gap-1 text-xs text-[#2C2C2C]/50 dark:text-slate-400">
+              <div className="flex items-center gap-1 text-xs text-[#2C2C2C]/50 dark:text-gray-400">
                 <span>{startOfWeek === "Sunday" ? "Domingo" : "Segunda-feira"}</span>
                 <ChevronRight className="w-4 h-4" />
               </div>
             </button>
 
-            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50">
+            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-[#232631]/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-pink-100 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 rounded-xl">
                   <Bell className="w-4 h-4" />
@@ -283,7 +283,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleToggleNotifications}
                 className={`w-10 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${
-                  notificationsEnabled ? "bg-[#6AAA55]" : "bg-gray-200 dark:bg-slate-700"
+                  notificationsEnabled ? "bg-[#6AAA55]" : "bg-gray-200 dark:bg-[#323646]"
                 }`}
               >
                 <div
@@ -294,7 +294,7 @@ export default function SettingsPage() {
               </button>
             </div>
 
-            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50">
+            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-[#232631]/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-[#10B981]/20 text-[#059669] dark:text-emerald-400 rounded-xl">
                   <Lock className="w-4 h-4" />
@@ -304,7 +304,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleToggleAuth}
                 className={`w-10 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${
-                  authEnabled ? "bg-[#6AAA55]" : "bg-gray-200 dark:bg-slate-700"
+                  authEnabled ? "bg-[#6AAA55]" : "bg-gray-200 dark:bg-[#323646]"
                 }`}
               >
                 <div
@@ -319,28 +319,28 @@ export default function SettingsPage() {
 
         {/* DATA Section */}
         <div className="space-y-2">
-          <div className="text-[11px] font-bold tracking-wider text-[#2C2C2C]/50 dark:text-slate-400 px-1 uppercase">
+          <div className="text-[11px] font-bold tracking-wider text-[#2C2C2C]/50 dark:text-gray-400 px-1 uppercase">
             Dados
           </div>
-          <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-gray-100 dark:border-slate-800 divide-y divide-gray-50 dark:divide-slate-800 overflow-hidden shadow-xs">
-            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50 cursor-pointer">
+          <div className="bg-white dark:bg-[#1A1C24] rounded-3xl border border-gray-100 dark:border-[#2B2E3C] divide-y divide-gray-50 dark:divide-[#2B2E3C] overflow-hidden shadow-xs">
+            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-[#232631]/50 cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 rounded-xl">
                   <Download className="w-4 h-4" />
                 </div>
                 <span className="text-xs font-semibold text-[#2C2C2C] dark:text-white">Exportar Dados</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#2C2C2C]/30 dark:text-slate-600" />
+              <ChevronRight className="w-4 h-4 text-[#2C2C2C]/30 dark:text-gray-600" />
             </div>
 
-            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50 cursor-pointer">
+            <div className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-[#232631]/50 cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl">
                   <Trash2 className="w-4 h-4" />
                 </div>
                 <span className="text-xs font-semibold text-[#9B3030] dark:text-red-400">Apagar Dados</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#2C2C2C]/30 dark:text-slate-600" />
+              <ChevronRight className="w-4 h-4 text-[#2C2C2C]/30 dark:text-gray-600" />
             </div>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function SettingsPage() {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full py-3.5 px-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-red-100 dark:border-red-900/30 text-xs font-bold text-red-600 dark:text-red-400 shadow-xs flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+          className="w-full py-3.5 px-4 bg-white dark:bg-[#1A1C24] rounded-2xl border border-red-100 dark:border-red-900/30 text-xs font-bold text-red-600 dark:text-red-400 shadow-xs flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
         >
           <LogOut className="w-4 h-4" />
           <span>Sair da Conta</span>
