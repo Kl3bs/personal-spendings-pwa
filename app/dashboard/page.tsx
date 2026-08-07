@@ -142,29 +142,29 @@ export default function DashboardPage() {
       </div>
 
       {/* Top 4 Summary Cards Grid (Figma Desktop Style) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Card 1: My Balance */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-          <div className="flex justify-between items-center text-emerald-600 text-[11px] font-semibold">
+        <div className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2">
+          <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" /> +20%
             </span>
           </div>
-          <div className="text-xs text-gray-500">Saldo Atual</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-[#1E293B]">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Saldo Atual</div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#1E293B] dark:text-gray-100 tracking-tight truncate">
             {formatCurrency(currentBalance)}
           </div>
         </div>
 
         {/* Card 2: Total Income */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-          <div className="flex justify-between items-center text-emerald-600 text-[11px] font-semibold">
+        <div className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2">
+          <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" /> +19%
             </span>
           </div>
-          <div className="text-xs text-gray-500">Renda Total</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-[#1E293B]">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Renda Total</div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#1E293B] dark:text-gray-100 tracking-tight truncate">
             {formatCurrency(allocation.totalIncome)}
           </div>
         </div>
@@ -172,51 +172,51 @@ export default function DashboardPage() {
         {/* Card 3: Total Savings (15% PYF) */}
         <Link
           href="/investments"
-          className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2 hover:border-[#0F766E]/40 hover:shadow-sm transition-all group block"
+          className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2 hover:border-[#0F766E]/40 hover:shadow-sm transition-all group block"
         >
-          <div className="flex justify-between items-center text-[#0F766E] text-[11px] font-semibold">
+          <div className="flex justify-between items-center text-[#0F766E] dark:text-teal-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <PiggyBank className="w-3.5 h-3.5" /> 15% PYF
             </span>
-            <span className="text-[10px] text-gray-400 group-hover:text-[#0F766E] font-normal">
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 group-hover:text-[#0F766E] dark:group-hover:text-teal-300 font-normal">
               Ver mais →
             </span>
           </div>
-          <div className="text-xs text-gray-500">Investimento Realizado</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-[#0F766E]">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Investimento Realizado</div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#0F766E] dark:text-teal-400 tracking-tight truncate">
             {formatCurrency(investmentStats.totalInvested)}
           </div>
-          <div className="text-[10px] text-gray-400 font-medium">
+          <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium truncate">
             Meta: {formatCurrency(allocation.investments)}
           </div>
         </Link>
 
         {/* Card 4: Total Expenses */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-          <div className="flex justify-between items-center text-rose-500 text-[11px] font-semibold">
+        <div className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2">
+          <div className="flex justify-between items-center text-rose-500 dark:text-rose-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <TrendingDown className="w-3.5 h-3.5" /> Gastos Total
             </span>
           </div>
-          <div className="text-xs text-gray-500">Despesas do Mês</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-rose-600">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Despesas do Mês</div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-rose-600 dark:text-rose-400 tracking-tight truncate">
             {formatCurrency(totalExpenses)}
           </div>
-          <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1">
-            <Pin className="w-3 h-3 text-[#0F766E]" />
-            <span>Contas do Mês: {formatCurrency(totalMonthlyBills)}</span>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1 truncate">
+            <Pin className="w-3 h-3 text-[#0F766E] dark:text-teal-400 shrink-0" />
+            <span className="truncate">Contas do Mês: {formatCurrency(totalMonthlyBills)}</span>
           </div>
         </div>
       </div>
 
-      {/* Main 2-Column Grid (Desktop Left + Right Panel) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Grid (Desktop Left + Right Panel) */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Left Column (Charts & Transactions) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-6">
           {/* Charts Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Dynamic Summary Bar Chart Card */}
-            <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs space-y-4 relative">
+            <div className="bg-white dark:bg-[#1A1C24] p-5 rounded-3xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-4 relative">
               <div className="flex justify-between items-center">
                 <div>
                   <div className="flex items-center gap-1.5">
