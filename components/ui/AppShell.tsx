@@ -116,7 +116,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <div className="w-7 h-7 rounded-full bg-[#F9D19C] text-[#2C2C2C] font-bold text-xs flex items-center justify-center border border-white dark:border-slate-800 shadow-xs">
+          <div className="w-7 h-7 rounded-full bg-[#F9D19C] text-[#2C2C2C] font-bold text-xs flex items-center justify-center border border-white dark:border-[#2B2E3C] shadow-xs">
             {userName.charAt(0).toUpperCase()}
           </div>
         </div>
@@ -135,13 +135,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center gap-5">
           <ThemeToggle />
-          <button className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-[#232631] transition-colors">
+          <button className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-[#20232D] transition-colors">
             <HelpCircle className="w-5 h-5" />
           </button>
-          <button className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-[#232631] transition-colors">
+          <button className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-[#20232D] transition-colors">
             <Mail className="w-5 h-5" />
           </button>
-          <button className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-[#232631] transition-colors relative">
+          <button className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-[#20232D] transition-colors relative">
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
@@ -178,11 +178,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="space-y-6">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-400" />
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-[#232631] text-xs rounded-xl border border-gray-100 dark:border-[#323646] text-gray-800 dark:text-gray-200 focus:outline-none focus:bg-white dark:focus:bg-[#1A1C24] focus:border-[#F9D19C] transition-all"
+                className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-[#20232D] text-xs rounded-xl border border-gray-100 dark:border-[#2E3242] text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:bg-white dark:focus:bg-[#1A1C24] focus:border-[#F9D19C] dark:focus:border-amber-400 transition-all"
               />
             </div>
 
@@ -201,8 +201,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                       isActive
-                        ? "bg-[#F9D19C] text-[#2C2C2C] shadow-xs"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#232631] hover:text-gray-900 dark:hover:text-white"
+                        ? "bg-[#F9D19C] dark:bg-amber-400 text-[#2C2C2C] dark:text-[#121318] font-bold shadow-xs dark:shadow-amber-400/20"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#20232D] hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
                     <Icon className="w-4 h-4 stroke-[2]" />
@@ -221,8 +221,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href="/settings"
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   pathname === "/settings"
-                    ? "bg-[#F9D19C] text-[#2C2C2C]"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#232631]"
+                    ? "bg-[#F9D19C] dark:bg-amber-400 text-[#2C2C2C] dark:text-[#121318] font-bold shadow-xs dark:shadow-amber-400/20"
+                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#20232D] hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 <Settings className="w-4 h-4" />
@@ -239,8 +239,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Sidebar Footer Info */}
-          <div className="p-3 bg-[#FFFCF8] dark:bg-[#232631] rounded-xl border border-gray-100 dark:border-[#323646] text-[10px] text-gray-500 dark:text-gray-400 text-center">
-            <span className="font-semibold text-gray-700 dark:text-gray-200">
+          <div className="p-3.5 bg-gray-50/80 dark:bg-[#20232D] rounded-2xl border border-gray-100 dark:border-[#2E3242] text-[10px] text-gray-500 dark:text-gray-400 text-center">
+            <span className="font-bold text-gray-700 dark:text-amber-300">
               Gastos Conscientes
             </span>
             <br />
