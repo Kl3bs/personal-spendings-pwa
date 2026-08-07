@@ -238,13 +238,14 @@ describe("firestore integration", () => {
   });
 
   describe("Expense operations", () => {
-    it("should add a new expense", async () => {
+    it("should add a new expense with isMonthlyBill flag", async () => {
       const res = await addExpense({
         userId: "user-1",
         amount: 200,
         category: "essencial",
-        description: "Supermercado",
+        description: "Aluguel",
         date: "2026-08-05",
+        isMonthlyBill: true,
       });
 
       expect(firestore.addDoc).toHaveBeenCalledWith(
@@ -253,7 +254,8 @@ describe("firestore integration", () => {
           userId: "user-1",
           amount: 200,
           category: "essencial",
-          description: "Supermercado",
+          description: "Aluguel",
+          isMonthlyBill: true,
           createdAt: "timestamp-mock",
         }),
       );

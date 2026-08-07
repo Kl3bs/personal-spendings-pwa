@@ -11,6 +11,7 @@ interface BatchExpenseItem {
   amount: string;
   category: "essencial" | "importante" | "superfluo";
   date: string;
+  isMonthlyBill: boolean;
 }
 
 interface BatchExpenseModalProps {
@@ -35,6 +36,7 @@ export function BatchExpenseModal({
       amount: "",
       category: "essencial",
       date: todayStr,
+      isMonthlyBill: false,
     },
     {
       id: "item-2",
@@ -42,6 +44,7 @@ export function BatchExpenseModal({
       amount: "",
       category: "essencial",
       date: todayStr,
+      isMonthlyBill: false,
     },
   ]);
   const [saving, setSaving] = useState(false);
@@ -59,6 +62,7 @@ export function BatchExpenseModal({
       amount: "",
       category: "essencial",
       date: todayStr,
+      isMonthlyBill: false,
     };
     setItems((prev) => [...prev, newItem]);
   }
@@ -75,7 +79,7 @@ export function BatchExpenseModal({
   function handleUpdateItem(
     id: string,
     field: keyof BatchExpenseItem,
-    value: string,
+    value: string | boolean,
   ) {
     setError(null);
     setItems((prev) =>
@@ -104,6 +108,7 @@ export function BatchExpenseModal({
         amount: parseFloat(item.amount),
         category: item.category,
         date: item.date || todayStr,
+        isMonthlyBill: !!item.isMonthlyBill,
       }),
     );
 
@@ -232,6 +237,24 @@ export function BatchExpenseModal({
                   }
                   className="bg-white px-2 py-2 text-xs font-semibold text-[#1E293B] rounded-xl border border-gray-200 focus:outline-none focus:border-[#0F766E]"
                 />
+
+                {/* Monthly Bill Checkbox */}
+                <label className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-700 select-none cursor-pointer bg-white px-2.5 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    aria-label="Conta do Mês"
+                    checked={item.isMonthlyBill}
+                    onChange={(e) =>
+                      handleUpdateItem(
+                        item.id,
+                        "isMonthlyBill",
+                        e.target.checked,
+                      )
+                    }
+                    className="w-3.5 h-3.5 accent-[#0F766E] rounded cursor-pointer"
+                  />
+                  <span>📌 Conta</span>
+                </label>
 
                 {/* Delete Row Button */}
                 <button

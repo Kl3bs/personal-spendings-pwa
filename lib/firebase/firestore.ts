@@ -39,6 +39,7 @@ export interface Expense {
   category: "essencial" | "importante" | "superfluo";
   description: string;
   date: string; // ISO format string YYYY-MM-DD
+  isMonthlyBill?: boolean;
   createdAt?: Timestamp;
 }
 

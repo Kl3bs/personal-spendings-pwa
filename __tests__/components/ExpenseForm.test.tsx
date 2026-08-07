@@ -45,18 +45,23 @@ describe("ExpenseForm component", () => {
     expect(superfluoBtn.className).toContain("bg-[#FDB557]");
   });
 
-  it("should submit expense details and trigger onSave and onClose", async () => {
+  it("should submit expense details with isMonthlyBill flag when toggled", async () => {
     render(<ExpenseForm userId="user-123" onSave={mockOnSave} onClose={mockOnClose} />);
 
-    // Type value "50" using keypad
-    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    // Type value "100" using keypad
+    fireEvent.click(screen.getByRole("button", { name: "1" }));
+    fireEvent.click(screen.getByRole("button", { name: "0" }));
     fireEvent.click(screen.getByRole("button", { name: "0" }));
 
     // Add description
     const descInput = screen.getByPlaceholderText(/Adicionar descrição/i);
-    await userEvent.type(descInput, "Almoço no restaurante");
+    await userEvent.type(descInput, "Conta de Luz");
 
-    // Click submit button (Check icon)
+    // Toggle "Conta do Mês" button
+    const monthlyBillBtn = screen.getByRole("button", { name: /Conta do Mês/i });
+    fireEvent.click(monthlyBillBtn);
+
+    // Click submit button
     const submitBtn = screen.getByRole("button", { name: "Salvar despesa" });
     fireEvent.click(submitBtn);
 
@@ -64,9 +69,10 @@ describe("ExpenseForm component", () => {
       expect(mockOnSave).toHaveBeenCalledWith(
         expect.objectContaining({
           userId: "user-123",
-          amount: 50,
+          amount: 100,
           category: "essencial",
-          description: "Almoço no restaurante",
+          description: "Conta de Luz",
+          isMonthlyBill: true,
         })
       );
       expect(mockOnClose).toHaveBeenCalled();

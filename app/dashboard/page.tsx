@@ -29,6 +29,7 @@ import {
   PiggyBank,
   Info,
   Zap,
+  Pin,
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -47,6 +48,9 @@ export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [isBatchOpen, setIsBatchOpen] = useState(false);
+  const [expenseFilter, setExpenseFilter] = useState<"all" | "monthly">(
+    "all",
+  );
   const [chartViewMode, setChartViewMode] = useState<"months" | "weeks">(
     "months",
   );
@@ -86,6 +90,13 @@ export default function DashboardPage() {
     profile?.budgetCategories,
   );
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalMonthlyBills = expenses
+    .filter((e) => e.isMonthlyBill)
+    .reduce((sum, e) => sum + e.amount, 0);
+  const displayedExpenses =
+    expenseFilter === "monthly"
+      ? expenses.filter((e) => e.isMonthlyBill)
+      : expenses;
   const investmentStats = calculateInvestmentStats(
     allocation.totalIncome,
     investments,
@@ -205,12 +216,16 @@ export default function DashboardPage() {
         <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
           <div className="flex justify-between items-center text-rose-500 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
-              <TrendingDown className="w-3.5 h-3.5" /> Gastos
+              <TrendingDown className="w-3.5 h-3.5" /> Gastos Total
             </span>
           </div>
           <div className="text-xs text-gray-500">Despesas do Mês</div>
           <div className="text-xl md:text-2xl font-extrabold font-heading text-rose-600">
             {formatCurrency(totalExpenses)}
+          </div>
+          <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1">
+            <Pin className="w-3 h-3 text-[#0F766E]" />
+            <span>Contas do Mês: {formatCurrency(totalMonthlyBills)}</span>
           </div>
         </div>
       </div>
@@ -420,7 +435,7 @@ export default function DashboardPage() {
 
           {/* Latest Transactions Table (Figma Desktop Style) */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-xs p-5 space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-sm font-bold text-gray-800">
                   Últimas Transações
@@ -429,18 +444,46 @@ export default function DashboardPage() {
                   Registros em tempo real do seu desafio
                 </p>
               </div>
-              <Link
-                href="/challenge"
-                className="text-xs font-semibold text-[#2C2C2C] hover:underline"
-              >
-                Ver Todas
-              </Link>
+
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl text-xs font-semibold">
+                  <button
+                    onClick={() => setExpenseFilter("all")}
+                    className={`px-2.5 py-1 rounded-lg transition-all ${
+                      expenseFilter === "all"
+                        ? "bg-white text-gray-800 shadow-xs font-bold"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    Todas
+                  </button>
+                  <button
+                    onClick={() => setExpenseFilter("monthly")}
+                    className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                      expenseFilter === "monthly"
+                        ? "bg-[#0F766E] text-white shadow-xs font-bold"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    <Pin className="w-3 h-3 fill-current" />
+                    <span>Contas do Mês</span>
+                  </button>
+                </div>
+
+                <Link
+                  href="/challenge"
+                  className="text-xs font-semibold text-[#2C2C2C] hover:underline hidden sm:inline"
+                >
+                  Ver Todas
+                </Link>
+              </div>
             </div>
 
-            {expenses.length === 0 ? (
+            {displayedExpenses.length === 0 ? (
               <div className="p-8 text-center text-xs text-gray-400">
-                Nenhuma transação cadastrada ainda. Clique em &quot;+ Novo
-                Gasto&quot; para registrar.
+                {expenseFilter === "monthly"
+                  ? "Nenhuma Conta do Mês cadastrada ainda."
+                  : "Nenhuma transação cadastrada ainda. Clique em '+ Novo Gasto' para registrar."}
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -454,13 +497,19 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {expenses.slice(0, 6).map((item) => (
+                    {displayedExpenses.slice(0, 6).map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50/50">
                         <td className="py-3 text-gray-500 font-medium">
                           {new Date(item.date).toLocaleDateString("pt-BR")}
                         </td>
-                        <td className="py-3 font-semibold text-gray-800">
-                          {item.description}
+                        <td className="py-3 font-semibold text-gray-800 flex items-center gap-1.5">
+                          <span>{item.description}</span>
+                          {item.isMonthlyBill && (
+                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
+                              <Pin className="w-2.5 h-2.5 fill-current" />
+                              Conta do Mês
+                            </span>
+                          )}
                         </td>
                         <td className="py-3">
                           <span

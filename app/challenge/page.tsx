@@ -16,13 +16,17 @@ import { Plus, Trash2, Calendar, Award, Sparkles, Zap } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const ExpenseForm = dynamic(
-  () => import("@/components/expenses/ExpenseForm").then((mod) => mod.ExpenseForm),
-  { ssr: false }
+  () =>
+    import("@/components/expenses/ExpenseForm").then((mod) => mod.ExpenseForm),
+  { ssr: false },
 );
 
 const BatchExpenseModal = dynamic(
-  () => import("@/components/expenses/BatchExpenseModal").then((mod) => mod.BatchExpenseModal),
-  { ssr: false }
+  () =>
+    import("@/components/expenses/BatchExpenseModal").then(
+      (mod) => mod.BatchExpenseModal,
+    ),
+  { ssr: false },
 );
 
 export default function ChallengePage() {
@@ -68,8 +72,12 @@ export default function ChallengePage() {
       {/* Top Bar */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">Desafio 30 Dias</h1>
-          <p className="text-xs text-[#2C2C2C]/60">Classifique seus gastos com consciência</p>
+          <h1 className="text-xl font-bold font-heading text-[#2C2C2C]">
+            Desafio 30 Dias
+          </h1>
+          <p className="text-xs text-[#2C2C2C]/60">
+            Classifique seus gastos com consciência
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -77,7 +85,7 @@ export default function ChallengePage() {
             className="flex items-center gap-1.5 bg-[#0F766E] text-white px-3 py-1.5 rounded-2xl text-xs font-semibold shadow-xs hover:bg-[#0d6861] transition-all"
           >
             <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Em Lote</span>
+            <span>Adicionar em Lote</span>
           </button>
           <div className="flex items-center gap-1.5 bg-[#F9D19C]/30 px-3 py-1.5 rounded-2xl text-xs font-semibold text-[#2C2C2C]">
             <Award className="w-4 h-4 text-[#2C2C2C]" />
@@ -90,7 +98,9 @@ export default function ChallengePage() {
       <div className="bg-[#F9D19C] rounded-3xl p-5 shadow-sm space-y-4 mb-6 relative overflow-hidden">
         <div className="flex justify-between items-start">
           <div>
-            <span className="text-xs font-medium text-[#2C2C2C]/70">Total Registrado</span>
+            <span className="text-xs font-medium text-[#2C2C2C]/70">
+              Total Registrado
+            </span>
             <div className="text-3xl font-bold font-heading text-[#2C2C2C]">
               {formatCurrency(totalSpent)}
             </div>
@@ -134,16 +144,28 @@ export default function ChallengePage() {
         {/* Categories Breakdown Chips */}
         <div className="grid grid-cols-3 gap-2 pt-1 text-center">
           <div className="bg-white/50 p-2 rounded-2xl">
-            <div className="text-[10px] text-[#2C2C2C]/60 font-medium">Essencial</div>
-            <div className="text-xs font-bold text-[#2C2C2C]">{formatCurrency(totalEssential)}</div>
+            <div className="text-[10px] text-[#2C2C2C]/60 font-medium">
+              Essencial
+            </div>
+            <div className="text-xs font-bold text-[#2C2C2C]">
+              {formatCurrency(totalEssential)}
+            </div>
           </div>
           <div className="bg-white/50 p-2 rounded-2xl">
-            <div className="text-[10px] text-[#2C2C2C]/60 font-medium">Importante</div>
-            <div className="text-xs font-bold text-[#2C2C2C]">{formatCurrency(totalImportant)}</div>
+            <div className="text-[10px] text-[#2C2C2C]/60 font-medium">
+              Importante
+            </div>
+            <div className="text-xs font-bold text-[#2C2C2C]">
+              {formatCurrency(totalImportant)}
+            </div>
           </div>
           <div className="bg-white/50 p-2 rounded-2xl">
-            <div className="text-[10px] text-[#2C2C2C]/60 font-medium">Supérfluo</div>
-            <div className="text-xs font-bold text-[#2C2C2C]">{formatCurrency(totalSuperfluous)}</div>
+            <div className="text-[10px] text-[#2C2C2C]/60 font-medium">
+              Supérfluo
+            </div>
+            <div className="text-xs font-bold text-[#2C2C2C]">
+              {formatCurrency(totalSuperfluous)}
+            </div>
           </div>
         </div>
       </div>
@@ -152,19 +174,26 @@ export default function ChallengePage() {
       <div className="space-y-3">
         <h2 className="text-sm font-bold text-[#2C2C2C] flex items-center justify-between">
           <span>Histórico de Lançamentos</span>
-          <span className="text-xs text-[#2C2C2C]/50 font-normal">Recentes</span>
+          <span className="text-xs text-[#2C2C2C]/50 font-normal">
+            Recentes
+          </span>
         </h2>
 
         {loading ? (
-          <div className="py-8 text-center text-xs text-[#2C2C2C]/40">Carregando seus lançamentos...</div>
+          <div className="py-8 text-center text-xs text-[#2C2C2C]/40">
+            Carregando seus lançamentos...
+          </div>
         ) : expenses.length === 0 ? (
           <div className="bg-white p-8 rounded-3xl text-center space-y-2 border border-gray-100 shadow-xs">
             <div className="w-12 h-12 rounded-full bg-[#F9D19C]/30 text-[#2C2C2C] flex items-center justify-center mx-auto">
               <Calendar className="w-6 h-6" />
             </div>
-            <h3 className="text-sm font-semibold text-[#2C2C2C]">Nenhum gasto registrado ainda</h3>
+            <h3 className="text-sm font-semibold text-[#2C2C2C]">
+              Nenhum gasto registrado ainda
+            </h3>
             <p className="text-xs text-[#2C2C2C]/60 max-w-xs mx-auto">
-              Clique no botão + abaixo para cadastrar seu primeiro gasto no desafio!
+              Clique no botão + abaixo para cadastrar seu primeiro gasto no
+              desafio!
             </p>
           </div>
         ) : (
@@ -174,8 +203,14 @@ export default function ChallengePage() {
                 item.category === "essencial"
                   ? { label: "Essencial", bg: "bg-[#59C7DF]/15 text-[#0284C7]" }
                   : item.category === "importante"
-                  ? { label: "Importante", bg: "bg-[#10B981]/15 text-[#059669]" }
-                  : { label: "Supérfluo", bg: "bg-[#FDB557]/20 text-[#D97706]" };
+                    ? {
+                        label: "Importante",
+                        bg: "bg-[#10B981]/15 text-[#059669]",
+                      }
+                    : {
+                        label: "Supérfluo",
+                        bg: "bg-[#FDB557]/20 text-[#D97706]",
+                      };
 
               return (
                 <div
@@ -183,7 +218,7 @@ export default function ChallengePage() {
                   className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs flex justify-between items-center gap-3 transition-transform active:scale-[0.99]"
                 >
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-[#2C2C2C]">
                         {item.description}
                       </span>
@@ -192,8 +227,16 @@ export default function ChallengePage() {
                       >
                         {categoryBadge.label}
                       </span>
+                      {item.isMonthlyBill && (
+                        <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
+                          <Zap className="w-2.5 h-2.5 fill-current" />
+                          Conta do Mês
+                        </span>
+                      )}
                     </div>
-                    <div className="text-[11px] text-[#2C2C2C]/50">{item.date}</div>
+                    <div className="text-[11px] text-[#2C2C2C]/50">
+                      {item.date}
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3">

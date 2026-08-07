@@ -62,9 +62,11 @@ describe("BatchExpenseModal component", () => {
     fireEvent.change(descInputs[0], { target: { value: "Almoço de Trabalho" } });
     fireEvent.change(amountInputs[0], { target: { value: "45.50" } });
 
-    // Fill row 2
+    // Fill row 2 and check "Conta do Mês" checkbox
     fireEvent.change(descInputs[1], { target: { value: "Supermercado" } });
     fireEvent.change(amountInputs[1], { target: { value: "154.50" } });
+    const monthlyCheckboxes = screen.getAllByRole("checkbox", { name: /Conta do Mês/i });
+    fireEvent.click(monthlyCheckboxes[1]);
 
     await waitFor(() => {
       expect(screen.getByText("Cadastrar 2 Gastos (R$ 200,00)")).toBeInTheDocument();
@@ -80,12 +82,14 @@ describe("BatchExpenseModal component", () => {
           description: "Almoço de Trabalho",
           amount: 45.5,
           category: "essencial",
+          isMonthlyBill: false,
         }),
         expect.objectContaining({
           userId: "user-123",
           description: "Supermercado",
           amount: 154.5,
           category: "essencial",
+          isMonthlyBill: true,
         }),
       ]);
       expect(mockOnClose).toHaveBeenCalled();
