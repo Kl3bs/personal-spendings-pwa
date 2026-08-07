@@ -47,10 +47,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
-  const [isBatchOpen, setIsBatchOpen] = useState(false);
-  const [expenseFilter, setExpenseFilter] = useState<"all" | "monthly">(
-    "all",
-  );
+  const [expenseFilter, setExpenseFilter] = useState<"all" | "monthly">("all");
   const [chartViewMode, setChartViewMode] = useState<"months" | "weeks">(
     "months",
   );
@@ -145,13 +142,6 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsBatchOpen(true)}
-            className="py-2.5 px-4 bg-[#0F766E] text-white font-semibold text-xs rounded-xl hover:bg-[#0d6861] shadow-xs flex items-center gap-1.5 transition-all"
-          >
-            <Zap className="w-4 h-4 fill-current" />
-            <span>⚡ Em Lote</span>
-          </button>
           <Link
             href="/challenge"
             className="py-2.5 px-4 bg-[#F9D19C] text-[#2C2C2C] font-semibold text-xs rounded-xl hover:bg-[#f5c37e] shadow-xs flex items-center gap-1.5 transition-all"
@@ -422,9 +412,6 @@ export default function DashboardPage() {
                         <span className="text-[10px] font-bold text-gray-400">
                           {cat.percentage}%
                         </span>
-                        <span className="text-xs font-bold text-gray-700">
-                          {formatCurrency(cat.amount)}
-                        </span>
                       </div>
                     </div>
                   ))}
@@ -659,16 +646,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-
-      {isBatchOpen && (
-        <BatchExpenseModal
-          userId={user?.uid || "guest"}
-          onSaveBatch={async (expensesList) => {
-            if (user) await addExpensesBatch(expensesList);
-          }}
-          onClose={() => setIsBatchOpen(false)}
-        />
-      )}
     </div>
   );
 }
