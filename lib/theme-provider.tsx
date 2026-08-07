@@ -21,16 +21,16 @@ export function ThemeProvider({
   children: React.ReactNode;
   defaultTheme?: Theme;
 }) {
-  const [theme, setThemeState] = useState<Theme>(defaultTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-
-  // Load theme from localStorage on initial mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored && ["light", "dark", "system"].includes(stored)) {
-      setThemeState(stored);
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+      if (stored && ["light", "dark", "system"].includes(stored)) {
+        return stored;
+      }
     }
-  }, []);
+    return defaultTheme;
+  });
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
 
   // Update HTML root class and resolvedTheme when theme changes or system preference changes
   useEffect(() => {
@@ -85,4 +85,3 @@ export function useTheme() {
   const context = useContext(ThemeContext);
   return context ?? defaultContextValue;
 }
-
