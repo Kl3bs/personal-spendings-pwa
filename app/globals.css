@@ -1,30 +1,35 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #FFFCF8;
-  --foreground: #2C2C2C;
-  --accent: #F9D19C;
+  --background: #F8F9FA;
+  --foreground: #1E293B;
   --surface: #FFFFFF;
-  --dock-bg: #FFF8EA;
-  --text-muted: rgba(0, 0, 0, 0.5);
-  --income: #6AAA55;
-  --expense: #9B3030;
-  --essential: #59C7DF;
-  --important: #10B981;
-  --superfluous: #FDB557;
+  --surface-border: #F1F5F9;
+  --accent: #F9D19C;
+  --text-muted: #64748B;
+  --income: #10B981;
+  --expense: #E11D48;
+}
+
+.dark {
+  --background: #121318;
+  --foreground: #F3F4F6;
+  --surface: #1A1C24;
+  --surface-border: #2B2E3C;
+  --accent: #F9D19C;
+  --text-muted: #9CA3AF;
+  --income: #34D399;
+  --expense: #F87171;
+  color-scheme: dark;
 }
 
 @theme {
-  --color-bg-warm: #FFFCF8;
+  --color-bg-warm: var(--background);
   --color-accent-sand: #F9D19C;
-  --color-text-charcoal: #2C2C2C;
-  --color-surface-white: #FFFFFF;
-  --color-dock-bg: #FFF8EA;
-  --color-income: #6AAA55;
-  --color-expense: #9B3030;
-  --color-essential: #59C7DF;
-  --color-important: #10B981;
-  --color-superfluous: #FDB557;
+  --color-text-charcoal: var(--foreground);
+  --color-surface-white: var(--surface);
   --font-poppins: var(--font-poppins);
   --font-inter: var(--font-inter);
 }
@@ -37,6 +42,54 @@ body {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Fallback automático para modo escuro garantindo que nenhum card permaneça branco */
+.dark body {
+  background-color: #121318 !important;
+  color: #F3F4F6 !important;
+}
+
+.dark .bg-white {
+  background-color: #1A1C24 !important;
+  color: #F3F4F6;
+}
+
+.dark .bg-\[\#FFFCF8\] {
+  background-color: #121318 !important;
+  color: #F3F4F6;
+}
+
+.dark .bg-[#F8F9FA] {
+  background-color: #121318 !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: #232631 !important;
+  color: #F3F4F6;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #2B2E3C !important;
+}
+
+.dark .text-\[\#1E293B\],
+.dark .text-\[\#2C2C2C\] {
+  color: #F3F4F6 !important;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  color: #E2E8F0 !important;
+}
+
+.dark .text-gray-400,
+.dark .text-gray-500,
+.dark .text-gray-600 {
+  color: #9CA3AF !important;
 }
 
 /* Ocultar setas clicáveis de incremento/decrecimento em inputs numéricos */

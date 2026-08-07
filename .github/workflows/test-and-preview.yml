@@ -1,4 +1,4 @@
-name: CI / PR Test & Firebase Preview
+name: CI / PR Test & Build
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  test_and_preview:
-    name: Lint, Test & Preview Deploy
+  test_and_build:
+    name: Lint, Test & Build
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -55,10 +55,3 @@ jobs:
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-
-      - name: Deploy to Firebase Hosting (Preview Channel)
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PERSONAL_SPENDINGS_533FC }}"
-          projectId: personal-spendings-533fc

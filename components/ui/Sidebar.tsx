@@ -47,18 +47,18 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 min-h-screen fixed left-0 top-0 z-30 p-6 justify-between shadow-xs">
+    <aside className="hidden md:flex flex-col w-64 bg-white dark:bg-[#1A1C24] border-r border-gray-100 dark:border-[#2B2E3C] min-h-screen fixed left-0 top-0 z-30 p-6 justify-between shadow-xs">
       <div className="space-y-8">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2">
-          <div className="p-2.5 bg-[#F9D19C] rounded-2xl text-[#2C2C2C] shadow-xs">
+          <div className="p-2.5 bg-[#F9D19C] dark:bg-amber-400 rounded-2xl text-[#2C2C2C] dark:text-[#121318] shadow-xs">
             <Wallet className="w-6 h-6 stroke-[2]" />
           </div>
           <div>
-            <h1 className="font-bold text-base font-heading text-[#2C2C2C] leading-none">
+            <h1 className="font-bold text-base font-heading text-[#2C2C2C] dark:text-white leading-none">
               Gastos
             </h1>
-            <span className="text-[10px] text-[#2C2C2C]/50 font-medium">
+            <span className="text-[10px] text-[#2C2C2C]/50 dark:text-gray-400 font-medium">
               Conscientes PWA
             </span>
           </div>
@@ -66,15 +66,15 @@ export function Sidebar() {
 
         {/* User Card */}
         {user && (
-          <div className="bg-[#FFFCF8] p-3.5 rounded-2xl border border-gray-100 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#F9D19C]/40 text-[#2C2C2C] flex items-center justify-center font-bold text-sm">
+          <div className="bg-[#FFFCF8] dark:bg-[#20232D] p-3.5 rounded-2xl border border-gray-100 dark:border-[#2E3242] flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#F9D19C] dark:bg-amber-400 text-[#2C2C2C] dark:text-[#121318] flex items-center justify-center font-bold text-sm">
               {userName.charAt(0).toUpperCase()}
             </div>
             <div className="overflow-hidden">
-              <div className="text-xs font-bold text-[#2C2C2C] truncate">
+              <div className="text-xs font-bold text-[#2C2C2C] dark:text-gray-100 truncate">
                 {userName}
               </div>
-              <div className="text-[10px] text-[#2C2C2C]/50 truncate">
+              <div className="text-[10px] text-[#2C2C2C]/50 dark:text-gray-400 truncate">
                 {user.email}
               </div>
             </div>
@@ -83,7 +83,7 @@ export function Sidebar() {
 
         {/* Navigation Menu */}
         <nav className="space-y-1.5">
-          <div className="text-[10px] font-bold tracking-wider text-[#2C2C2C]/40 px-3 uppercase mb-2">
+          <div className="text-[10px] font-bold tracking-wider text-[#2C2C2C]/40 dark:text-gray-400 px-3 uppercase mb-2">
             Navegação
           </div>
           {navItems.map((item) => {
@@ -96,8 +96,8 @@ export function Sidebar() {
                 href={item.href}
                 className={`flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-semibold transition-all ${
                   isActive
-                    ? "bg-[#F9D19C] text-[#2C2C2C] shadow-xs"
-                    : "text-[#2C2C2C]/70 hover:bg-[#FFFCF8] hover:text-[#2C2C2C]"
+                    ? "bg-[#F9D19C] dark:bg-amber-400 text-[#2C2C2C] dark:text-[#121318] font-bold shadow-xs dark:shadow-amber-400/20"
+                    : "text-[#2C2C2C]/70 dark:text-gray-300 hover:bg-[#FFFCF8] dark:hover:bg-[#20232D] hover:text-[#2C2C2C] dark:hover:text-white"
                 }`}
               >
                 <Icon className="w-4 h-4 stroke-[2]" />
@@ -110,10 +110,10 @@ export function Sidebar() {
 
       {/* Bottom Logout */}
       {user && (
-        <div className="pt-4 border-t border-gray-100">
+        <div className="pt-4 border-t border-gray-100 dark:border-[#2B2E3C]">
           <button
             onClick={() => signOut(auth)}
-            className="w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Sair da Conta</span>

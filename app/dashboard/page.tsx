@@ -133,7 +133,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/challenge"
-            className="py-2.5 px-4 bg-[#F9D19C] text-[#2C2C2C] font-semibold text-xs rounded-xl hover:bg-[#f5c37e] shadow-xs flex items-center gap-1.5 transition-all"
+            className="py-2.5 px-4 bg-[#F9D19C] dark:bg-amber-400 text-[#2C2C2C] dark:text-[#121318] font-bold text-xs rounded-xl hover:bg-[#f5c37e] dark:hover:bg-amber-300 shadow-xs dark:shadow-amber-400/20 flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Gasto (30d)</span>
@@ -142,29 +142,33 @@ export default function DashboardPage() {
       </div>
 
       {/* Top 4 Summary Cards Grid (Figma Desktop Style) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Card 1: My Balance */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-          <div className="flex justify-between items-center text-emerald-600 text-[11px] font-semibold">
+        <div className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2">
+          <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" /> +20%
             </span>
           </div>
-          <div className="text-xs text-gray-500">Saldo Atual</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-[#1E293B]">
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Saldo Atual
+          </div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#1E293B] dark:text-gray-100 tracking-tight truncate">
             {formatCurrency(currentBalance)}
           </div>
         </div>
 
         {/* Card 2: Total Income */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-          <div className="flex justify-between items-center text-emerald-600 text-[11px] font-semibold">
+        <div className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2">
+          <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" /> +19%
             </span>
           </div>
-          <div className="text-xs text-gray-500">Renda Total</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-[#1E293B]">
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Renda Total
+          </div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#1E293B] dark:text-gray-100 tracking-tight truncate">
             {formatCurrency(allocation.totalIncome)}
           </div>
         </div>
@@ -172,51 +176,57 @@ export default function DashboardPage() {
         {/* Card 3: Total Savings (15% PYF) */}
         <Link
           href="/investments"
-          className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2 hover:border-[#0F766E]/40 hover:shadow-sm transition-all group block"
+          className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2 hover:border-[#0F766E]/40 hover:shadow-sm transition-all group block"
         >
-          <div className="flex justify-between items-center text-[#0F766E] text-[11px] font-semibold">
+          <div className="flex justify-between items-center text-[#0F766E] dark:text-teal-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <PiggyBank className="w-3.5 h-3.5" /> 15% PYF
             </span>
-            <span className="text-[10px] text-gray-400 group-hover:text-[#0F766E] font-normal">
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 group-hover:text-[#0F766E] dark:group-hover:text-teal-300 font-normal">
               Ver mais →
             </span>
           </div>
-          <div className="text-xs text-gray-500">Investimento Realizado</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-[#0F766E]">
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Investimento Realizado
+          </div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-[#0F766E] dark:text-teal-400 tracking-tight truncate">
             {formatCurrency(investmentStats.totalInvested)}
           </div>
-          <div className="text-[10px] text-gray-400 font-medium">
+          <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium truncate">
             Meta: {formatCurrency(allocation.investments)}
           </div>
         </Link>
 
         {/* Card 4: Total Expenses */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-2">
-          <div className="flex justify-between items-center text-rose-500 text-[11px] font-semibold">
+        <div className="bg-white dark:bg-[#1A1C24] p-4 rounded-2xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-2">
+          <div className="flex justify-between items-center text-rose-500 dark:text-rose-400 text-[11px] font-semibold">
             <span className="flex items-center gap-0.5">
               <TrendingDown className="w-3.5 h-3.5" /> Gastos Total
             </span>
           </div>
-          <div className="text-xs text-gray-500">Despesas do Mês</div>
-          <div className="text-xl md:text-2xl font-extrabold font-heading text-rose-600">
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Despesas do Mês
+          </div>
+          <div className="text-lg sm:text-xl xl:text-2xl font-extrabold font-heading text-rose-600 dark:text-rose-400 tracking-tight truncate">
             {formatCurrency(totalExpenses)}
           </div>
-          <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1">
-            <Pin className="w-3 h-3 text-[#0F766E]" />
-            <span>Contas do Mês: {formatCurrency(totalMonthlyBills)}</span>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1 truncate">
+            <Pin className="w-3 h-3 text-[#0F766E] dark:text-teal-400 shrink-0" />
+            <span className="truncate">
+              Contas do Mês: {formatCurrency(totalMonthlyBills)}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Main 2-Column Grid (Desktop Left + Right Panel) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Grid (Desktop Left + Right Panel) */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Left Column (Charts & Transactions) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-6">
           {/* Charts Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Dynamic Summary Bar Chart Card */}
-            <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs space-y-4 relative">
+            <div className="bg-white dark:bg-[#1A1C24] p-5 rounded-3xl border border-gray-100 dark:border-[#2B2E3C] shadow-xs space-y-4 relative">
               <div className="flex justify-between items-center">
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -411,7 +421,7 @@ export default function DashboardPage() {
 
           {/* Latest Transactions Table (Figma Desktop Style) */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-xs p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-gray-800">
                   Últimas Transações
@@ -421,7 +431,7 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-start gap-2">
                 <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl text-xs font-semibold">
                   <button
                     onClick={() => setExpenseFilter("all")}
@@ -448,7 +458,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/challenge"
-                  className="text-xs font-semibold text-[#2C2C2C] hover:underline hidden sm:inline"
+                  className="text-xs font-semibold text-[#2C2C2C] hover:underline"
                 >
                   Ver Todas
                 </Link>
@@ -462,52 +472,102 @@ export default function DashboardPage() {
                   : "Nenhuma transação cadastrada ainda. Clique em '+ Novo Gasto' para registrar."}
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-gray-100 text-gray-400 font-semibold">
-                      <th className="pb-3">Data</th>
-                      <th className="pb-3">Descrição</th>
-                      <th className="pb-3">Categoria</th>
-                      <th className="pb-3 text-right">Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {displayedExpenses.slice(0, 6).map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50/50">
-                        <td className="py-3 text-gray-500 font-medium">
-                          {new Date(item.date).toLocaleDateString("pt-BR")}
-                        </td>
-                        <td className="py-3 font-semibold text-gray-800 flex items-center gap-1.5">
-                          <span>{item.description}</span>
-                          {item.isMonthlyBill && (
-                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
-                              <Pin className="w-2.5 h-2.5 fill-current" />
-                              Conta do Mês
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-3">
+              <>
+                {/* Mobile View: Clean Card List */}
+                <div className="sm:hidden space-y-2.5">
+                  {displayedExpenses.slice(0, 6).map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-3 bg-gray-50/80 dark:bg-[#232631] rounded-2xl border border-gray-100/80 dark:border-[#323646] space-y-1.5"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           <span
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                               item.category === "essencial"
-                                ? "bg-amber-50 text-amber-700"
+                                ? "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 dark:border dark:border-amber-700/50"
                                 : item.category === "importante"
-                                  ? "bg-blue-50 text-blue-700"
-                                  : "bg-rose-50 text-rose-700"
+                                  ? "bg-blue-100 text-blue-800 dark:bg-sky-950/80 dark:text-sky-300 dark:border dark:border-sky-700/50"
+                                  : "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 dark:border dark:border-rose-700/50"
                             }`}
                           >
                             {item.category.toUpperCase()}
                           </span>
-                        </td>
-                        <td className="py-3 text-right font-bold text-rose-600">
+                          {item.isMonthlyBill && (
+                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] dark:bg-teal-950/80 dark:text-teal-300 border border-[#0F766E]/20 dark:border-teal-700/50">
+                              <Pin className="w-2.5 h-2.5 fill-current" />
+                              Conta do Mês
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-400 font-medium shrink-0">
+                          {new Date(item.date).toLocaleDateString("pt-BR")}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-0.5">
+                        <span className="text-xs font-bold text-gray-800 dark:text-gray-100 truncate">
+                          {item.description}
+                        </span>
+                        <span className="text-xs font-extrabold text-rose-600 dark:text-rose-400 shrink-0">
                           -{formatCurrency(item.amount)}
-                        </td>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop View: Full Table */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-gray-100 dark:border-[#2B2E3C] text-gray-400 dark:text-gray-400 font-semibold">
+                        <th className="pb-3">Data</th>
+                        <th className="pb-3">Descrição</th>
+                        <th className="pb-3">Categoria</th>
+                        <th className="pb-3 text-right">Valor</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50 dark:divide-[#2B2E3C]">
+                      {displayedExpenses.slice(0, 6).map((item) => (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-gray-50/50 dark:hover:bg-[#232631]"
+                        >
+                          <td className="py-3 text-gray-500 dark:text-gray-400 font-medium">
+                            {new Date(item.date).toLocaleDateString("pt-BR")}
+                          </td>
+                          <td className="py-3 font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+                            <span>{item.description}</span>
+                            {item.isMonthlyBill && (
+                              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] dark:bg-teal-950/80 dark:text-teal-300 border border-[#0F766E]/20 dark:border-teal-700/50">
+                                <Pin className="w-2.5 h-2.5 fill-current" />
+                                Conta do Mês
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3">
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                item.category === "essencial"
+                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 dark:border dark:border-amber-700/50"
+                                  : item.category === "importante"
+                                    ? "bg-blue-50 text-blue-700 dark:bg-sky-950/80 dark:text-sky-300 dark:border dark:border-sky-700/50"
+                                    : "bg-rose-50 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 dark:border dark:border-rose-700/50"
+                              }`}
+                            >
+                              {item.category.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="py-3 text-right font-bold text-rose-600 dark:text-rose-400">
+                            -{formatCurrency(item.amount)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -553,12 +613,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Goals Checklist Card (Figma desktop_1.png) */}
-          <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-[#1A1C24] rounded-3xl border border-gray-100 dark:border-[#2B2E3C] p-5 shadow-xs space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-gray-800">
+              <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">
                 Checklist de Metas
               </h3>
-              <span className="text-[10px] font-semibold text-gray-400">
+              <span className="text-[10px] font-bold text-gray-500 dark:text-teal-300 bg-gray-100 dark:bg-teal-950/60 dark:border dark:border-teal-800/40 px-2.5 py-0.5 rounded-full">
                 {completedGoals.length}/3 Concluídas
               </span>
             </div>
@@ -567,20 +627,20 @@ export default function DashboardPage() {
               {/* Goal 1 */}
               <button
                 onClick={() => toggleGoal("goal-1")}
-                className="w-full text-left flex items-start gap-3 p-3 bg-gray-50/70 hover:bg-gray-100/60 transition-colors rounded-2xl cursor-pointer"
+                className="w-full text-left flex items-start gap-3 p-3.5 bg-gray-50/70 dark:bg-[#20232D] hover:bg-gray-100/60 dark:hover:bg-[#282C38] border border-transparent dark:border-[#2E3242] transition-colors rounded-2xl cursor-pointer group"
               >
                 {completedGoals.includes("goal-1") ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-500 group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors" />
                 )}
                 <div>
                   <div
-                    className={`text-xs font-bold ${completedGoals.includes("goal-1") ? "line-through text-gray-400" : "text-gray-800"}`}
+                    className={`text-xs font-bold ${completedGoals.includes("goal-1") ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-100"}`}
                   >
                     Investimento Liberdade (15%)
                   </div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">
                     Separar R$ {allocation.investments} no dia do pagamento
                   </div>
                 </div>
@@ -589,20 +649,20 @@ export default function DashboardPage() {
               {/* Goal 2 */}
               <button
                 onClick={() => toggleGoal("goal-2")}
-                className="w-full text-left flex items-start gap-3 p-3 bg-gray-50/70 hover:bg-gray-100/60 transition-colors rounded-2xl cursor-pointer"
+                className="w-full text-left flex items-start gap-3 p-3.5 bg-gray-50/70 dark:bg-[#20232D] hover:bg-gray-100/60 dark:hover:bg-[#282C38] border border-transparent dark:border-[#2E3242] transition-colors rounded-2xl cursor-pointer group"
               >
                 {completedGoals.includes("goal-2") ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-500 group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors" />
                 )}
                 <div>
                   <div
-                    className={`text-xs font-bold ${completedGoals.includes("goal-2") ? "line-through text-gray-400" : "text-gray-800"}`}
+                    className={`text-xs font-bold ${completedGoals.includes("goal-2") ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-100"}`}
                   >
                     Desafio dos 30 Dias
                   </div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">
                     Registrar gastos com tag reflexiva (Essencial / Importante /
                     Supérfluo)
                   </div>
@@ -612,20 +672,20 @@ export default function DashboardPage() {
               {/* Goal 3 */}
               <button
                 onClick={() => toggleGoal("goal-3")}
-                className="w-full text-left flex items-start gap-3 p-3 bg-gray-50/70 hover:bg-gray-100/60 transition-colors rounded-2xl cursor-pointer"
+                className="w-full text-left flex items-start gap-3 p-3.5 bg-gray-50/70 dark:bg-[#20232D] hover:bg-gray-100/60 dark:hover:bg-[#282C38] border border-transparent dark:border-[#2E3242] transition-colors rounded-2xl cursor-pointer group"
               >
                 {completedGoals.includes("goal-3") ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-500 group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors" />
                 )}
                 <div>
                   <div
-                    className={`text-xs font-bold ${completedGoals.includes("goal-3") ? "line-through text-gray-400" : "text-gray-800"}`}
+                    className={`text-xs font-bold ${completedGoals.includes("goal-3") ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-100"}`}
                   >
                     Teto de Gastos Essenciais (55%)
                   </div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">
                     Manter essenciais em até{" "}
                     {formatCurrency(allocation.necessities)}
                   </div>
