@@ -19,12 +19,15 @@ export function BudgetCategoryModal({
   const [categories, setCategories] = useState<BudgetCategoryConfig[]>(
     initialCategories && initialCategories.length > 0
       ? initialCategories
-      : DEFAULT_BUDGET_CATEGORIES
+      : DEFAULT_BUDGET_CATEGORIES,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const rawTotal = categories.reduce((sum, cat) => sum + (Number(cat.percentage) || 0), 0);
+  const rawTotal = categories.reduce(
+    (sum, cat) => sum + (Number(cat.percentage) || 0),
+    0,
+  );
   const totalPercentage = Number(rawTotal.toFixed(2));
   const isValidTotal = totalPercentage === 100;
 
@@ -50,7 +53,7 @@ export function BudgetCategoryModal({
 
   function handleChangeName(id: string, name: string) {
     setCategories(
-      categories.map((cat) => (cat.id === id ? { ...cat, name } : cat))
+      categories.map((cat) => (cat.id === id ? { ...cat, name } : cat)),
     );
   }
 
@@ -58,7 +61,7 @@ export function BudgetCategoryModal({
     const val = parseFloat(valStr);
     const percentage = isNaN(val) ? 0 : val;
     setCategories(
-      categories.map((cat) => (cat.id === id ? { ...cat, percentage } : cat))
+      categories.map((cat) => (cat.id === id ? { ...cat, percentage } : cat)),
     );
   }
 
@@ -96,7 +99,8 @@ export function BudgetCategoryModal({
               Personalizar Categorias e Orçamento
             </h2>
             <p className="text-xs text-gray-500">
-              Ajuste os nomes e a porcentagem de cada categoria para sua realidade.
+              Ajuste os nomes e a porcentagem de cada categoria para sua
+              realidade.
             </p>
           </div>
           <button
@@ -117,14 +121,18 @@ export function BudgetCategoryModal({
           }`}
         >
           <div className="flex items-center gap-2">
-            <AlertCircle className={`w-5 h-5 ${isValidTotal ? "text-emerald-600" : "text-amber-600"}`} />
+            <AlertCircle
+              className={`w-5 h-5 ${isValidTotal ? "text-emerald-600" : "text-amber-600"}`}
+            />
             <span className="text-xs font-semibold">
               {isValidTotal
                 ? "Soma exata das porcentagens:"
                 : "A soma das porcentagens deve ser exatamente 100%:"}
             </span>
           </div>
-          <span className={`text-base font-extrabold font-heading ${isValidTotal ? "text-emerald-700" : "text-amber-700"}`}>
+          <span
+            className={`text-base font-extrabold font-heading ${isValidTotal ? "text-emerald-700" : "text-amber-700"}`}
+          >
             {totalPercentage}% / 100%
           </span>
         </div>
@@ -159,7 +167,9 @@ export function BudgetCategoryModal({
                     max="100"
                     step="1"
                     value={cat.percentage}
-                    onChange={(e) => handleChangePercentage(cat.id, e.target.value)}
+                    onChange={(e) =>
+                      handleChangePercentage(cat.id, e.target.value)
+                    }
                     className="w-full bg-white px-2.5 py-2 text-xs font-bold text-center text-[#1E293B] rounded-xl border border-gray-200 focus:outline-none focus:border-[#0F766E]"
                     required
                   />
