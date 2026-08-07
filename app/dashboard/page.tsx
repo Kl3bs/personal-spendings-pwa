@@ -411,7 +411,7 @@ export default function DashboardPage() {
 
           {/* Latest Transactions Table (Figma Desktop Style) */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-xs p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-gray-800">
                   Últimas Transações
@@ -421,7 +421,7 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-start gap-2">
                 <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl text-xs font-semibold">
                   <button
                     onClick={() => setExpenseFilter("all")}
@@ -448,7 +448,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/challenge"
-                  className="text-xs font-semibold text-[#2C2C2C] hover:underline hidden sm:inline"
+                  className="text-xs font-semibold text-[#2C2C2C] hover:underline"
                 >
                   Ver Todas
                 </Link>
@@ -462,52 +462,99 @@ export default function DashboardPage() {
                   : "Nenhuma transação cadastrada ainda. Clique em '+ Novo Gasto' para registrar."}
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-gray-100 text-gray-400 font-semibold">
-                      <th className="pb-3">Data</th>
-                      <th className="pb-3">Descrição</th>
-                      <th className="pb-3">Categoria</th>
-                      <th className="pb-3 text-right">Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {displayedExpenses.slice(0, 6).map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50/50">
-                        <td className="py-3 text-gray-500 font-medium">
-                          {new Date(item.date).toLocaleDateString("pt-BR")}
-                        </td>
-                        <td className="py-3 font-semibold text-gray-800 flex items-center gap-1.5">
-                          <span>{item.description}</span>
+              <>
+                {/* Mobile View: Clean Card List */}
+                <div className="sm:hidden space-y-2.5">
+                  {displayedExpenses.slice(0, 6).map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-3 bg-gray-50/80 rounded-2xl border border-gray-100/80 space-y-1.5"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              item.category === "essencial"
+                                ? "bg-amber-100 text-amber-800"
+                                : item.category === "importante"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-rose-100 text-rose-800"
+                            }`}
+                          >
+                            {item.category.toUpperCase()}
+                          </span>
                           {item.isMonthlyBill && (
                             <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
                               <Pin className="w-2.5 h-2.5 fill-current" />
                               Conta do Mês
                             </span>
                           )}
-                        </td>
-                        <td className="py-3">
-                          <span
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                              item.category === "essencial"
-                                ? "bg-amber-50 text-amber-700"
-                                : item.category === "importante"
-                                  ? "bg-blue-50 text-blue-700"
-                                  : "bg-rose-50 text-rose-700"
-                            }`}
-                          >
-                            {item.category.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="py-3 text-right font-bold text-rose-600">
+                        </div>
+                        <span className="text-[10px] text-gray-400 font-medium shrink-0">
+                          {new Date(item.date).toLocaleDateString("pt-BR")}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-0.5">
+                        <span className="text-xs font-bold text-gray-800 truncate">
+                          {item.description}
+                        </span>
+                        <span className="text-xs font-extrabold text-rose-600 shrink-0">
                           -{formatCurrency(item.amount)}
-                        </td>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop View: Full Table */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-gray-100 text-gray-400 font-semibold">
+                        <th className="pb-3">Data</th>
+                        <th className="pb-3">Descrição</th>
+                        <th className="pb-3">Categoria</th>
+                        <th className="pb-3 text-right">Valor</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {displayedExpenses.slice(0, 6).map((item) => (
+                        <tr key={item.id} className="hover:bg-gray-50/50">
+                          <td className="py-3 text-gray-500 font-medium">
+                            {new Date(item.date).toLocaleDateString("pt-BR")}
+                          </td>
+                          <td className="py-3 font-semibold text-gray-800 flex items-center gap-1.5">
+                            <span>{item.description}</span>
+                            {item.isMonthlyBill && (
+                              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20">
+                                <Pin className="w-2.5 h-2.5 fill-current" />
+                                Conta do Mês
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3">
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                item.category === "essencial"
+                                  ? "bg-amber-50 text-amber-700"
+                                  : item.category === "importante"
+                                    ? "bg-blue-50 text-blue-700"
+                                    : "bg-rose-50 text-rose-700"
+                              }`}
+                            >
+                              {item.category.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="py-3 text-right font-bold text-rose-600">
+                            -{formatCurrency(item.amount)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
